@@ -5,6 +5,7 @@ public class HashTable <K, V>{
 	
 	private KVPair[][] values;
 	private int total = 0;
+	private double LF;
 	
 	public static void main(String[] args) {
 		HashTable<Integer, String> HT = new HashTable<>();
@@ -46,12 +47,13 @@ public class HashTable <K, V>{
 			row[row.length - 1] = newPair; 
 		}
 		
-		/*Print values in row
-		for(int i = 0; i < row.length; i++){
-			System.out.print(row[i].value + ", ");
-		}*/
-		
 		total ++;
+		
+		//rehash?
+		LF = calcLF(total, values.length);
+		if(LF >= 0.75) {
+			//REHASH
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -84,6 +86,10 @@ public class HashTable <K, V>{
 		int hash = key.hashCode();
 		hash &= 0x7fffffff;
 		return (hash % values.length);
+	}
+	
+	private double calcLF(int numVal, int length) {
+		return (numVal/length);
 	}
 	
 	private static class KVPair <K, V>{
