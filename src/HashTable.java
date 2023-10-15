@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
+
 public class HashTable <K, V>{
 	
-	private ArrayList<K> keys;
+	
+	private KVPair[] keys;
 	private ArrayList<ArrayList<V>> values;
 	int initialSize;
 	
@@ -11,7 +13,7 @@ public class HashTable <K, V>{
 	}
 	
 	public HashTable(int initialSize) {
-		this.keys = new ArrayList<K>(initialSize); //Initialize Keys
+		this.keys = new KVPair[initialSize]; //Initialize Keys
 		
 		//Initialize Values
 		this.values = new ArrayList<ArrayList<V>>(initialSize);
@@ -29,12 +31,27 @@ public class HashTable <K, V>{
 		
 		//hash+mod key
 		int index = hashAndMod(key);
+		
 		//insert value
+		KVPair<K, V> newPair = new KVPair<K, V>(key, value);
+		values.add()
+		
+		
 	}
 	
 	private int hashAndMod(K key) {
-		//how do I hash a generic object?
+		int hash = key.hashCode();
+		hash &= 0x7fffffff;
+		return (hash % keys.size());
 	}
 	
-
+	private static class KVPair <K, V>{
+		private K key;
+		private V value;
+		
+		public KVPair(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
+	}
 }
