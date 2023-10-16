@@ -6,14 +6,18 @@ public class HashTable <K, V>{
 	private KVPair[][] values;
 	private int total = 0;
 	private double LF;
+	private final double LFConst = 0.75;
 	
 	public static void main(String[] args) {
-		HashTable<Integer, String> HT = new HashTable<>(10);
+		HashTable<Integer, String> HT = new HashTable<>(9);
 		
 		System.out.println(HT.isEmpty());
 		System.out.println("\n");
 		
-		for(int i = 0; i < 20; i++) {
+		System.out.println(HT.countEmptySlots());
+		System.out.println("\n");
+		
+		for(int i = 0; i < 100; i++) {
 			HT.put(i, "Value" + i);
 		}
 		
@@ -40,6 +44,19 @@ public class HashTable <K, V>{
 		System.out.println("\n");
 		
 		System.out.println(HT.size());
+		System.out.println("\n");
+		
+		System.out.println(HT.reverseLookup("Value7"));
+		System.out.println(HT.reverseLookup("EDFNQEWKDMLD"));
+		System.out.println("\n");
+		
+		System.out.println(HT.getTableSize());
+		System.out.println("\n");
+		
+		System.out.println(HT.countEmptySlots());
+		System.out.println("\n");
+		
+		System.out.println(HT.findLongestRunLength());
 		System.out.println("\n");
 
 		
@@ -75,16 +92,16 @@ public class HashTable <K, V>{
 				}
 			}
 			
-			row = addToArray(row);	
+			values[rowIndex] = addToArray(row);	
 			
-			row[row.length - 1] = newPair; 
+			values[rowIndex][row.length] = newPair; 
 		}
 		
 		total ++;
 		
 		//rehash?
 		LF = getLoadFactor();
-		if(LF >= 0.75) {
+		if(LF >= LFConst) {
 			Rehash(values);
 		}
 	}
@@ -158,14 +175,50 @@ public class HashTable <K, V>{
 		return total;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public K reverseLookup(V value) {
+		for(int i = 0; i < values.length; i++) {
+			for(int j = 0; j < values[i].length; j++) {
+				if ((values[i][j]!=null) && (values[i][j].value.equals(value))) { //Will this work if value is not a String?
+					return (K) values[i][j].key;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	public int getTableSize() {
+		return values.length;
+	}
 	
 	public double getLoadFactor() {
 		return (total/values.length);
 	}
 	
+	public int countEmptySlots() {
+		int empty = 0;
+		for(int i = 0; i<values.length;  i++) {
+			if(values[i][0] == null) empty++;
+		}
+		return empty;
+	}
+	
+	public int findLongestRunLength() {
+		int longestChain = 0;
+		for(int i = 0; i < values.length; i++) {
+			if(values[i].length > longestChain) longestChain = values[i].length;
+		}
+		
+		return longestChain;
+	}
+	
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	private void Rehash(KVPair[][] oldArray) {
-		System.out.println(values.length);
 		//reset values
 		values = new KVPair[oldArray.length*2][1];
 		total = 0;
@@ -178,18 +231,14 @@ public class HashTable <K, V>{
 				}
 			}
 		}
-
-		System.out.println("Rehashed!");
-		System.out.println(values.length);
 	}
 	
 	
-	private KVPair[] addToArray(KVPair[] KVPs) {
-		KVPair[] newArray = new KVPair[KVPs.length + 1];
-		System.arraycopy(KVPs, 0, newArray, 0, KVPs.length);
+	private KVPair[] addToArray(KVPair[] oldRow) {
+		KVPair[] newArray = new KVPair[oldRow.length + 1];
+		System.arraycopy(oldRow, 0, newArray, 0, oldRow.length);
 		
 		return newArray;
-
 	}
  	
 	private int hashAndMod(K key) {
