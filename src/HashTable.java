@@ -1,12 +1,12 @@
 @SuppressWarnings("rawtypes")
 
-
 public class HashTable <K, V>{
 	
 	private KVPair[][] values;
 	private int total = 0;
 	private double LF;
-	private final double LFConst = 2;
+	private final double LFConstUpper = 2;
+	private final double LFConstLower = 0.5;
 	
 	public static void main(String[] args) {
 		/*HashTable<Integer, String> HT = new HashTable<>(9);
@@ -63,7 +63,7 @@ public class HashTable <K, V>{
 		
 		
 		
-		HashTable<String, Integer> HT = new HashTable<>(9);
+		HashTable<String, Integer> HT = new HashTable<>(20);
 		
 		System.out.println("is empty? " + HT.isEmpty());
 		System.out.println("\n");
@@ -72,7 +72,7 @@ public class HashTable <K, V>{
 		System.out.println("\n");
 		
 		System.out.println("Adding keys and values 0-10");
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < 7; i++) {
 			HT.put("value" + i, i);
 		}
 		
@@ -92,7 +92,7 @@ public class HashTable <K, V>{
 		System.out.println("Contains key value60? " + HT.containsKey("value60"));
 		System.out.println("\n");
 		
-		System.out.println("Contains value '7'? " + HT.containsValue(7));
+		System.out.println("Contains value '4'? " + HT.containsValue(4));
 		System.out.println("Contains value '90'? " + HT.containsValue(90));
 		System.out.println("\n");
 		
@@ -102,7 +102,7 @@ public class HashTable <K, V>{
 		System.out.println("HT size: " + HT.size());
 		System.out.println("\n");
 		
-		System.out.println("reverse lookup 7: " + HT.reverseLookup(7));
+		System.out.println("reverse lookup 2: " + HT.reverseLookup(2));
 		System.out.println("reverse lookup '7654': " + HT.reverseLookup(7654));
 		System.out.println("\n");
 		
@@ -155,7 +155,7 @@ public class HashTable <K, V>{
 		
 		//rehash?
 		LF = getLoadFactor();
-		if(LF >= LFConst) {
+		if(LF >= LFConstUpper) {
 			Rehash(values);
 		}
 	}
@@ -190,8 +190,18 @@ public class HashTable <K, V>{
 				row[i] = row[row.length-1]; //set value to be deleted to last value
 				System.arraycopy(row, 0, values[rowIndex], 0, row.length - 1); //remove last value
 				total --;
+				
+				LF = getLoadFactor();
+				if(LF <= LFConstLower && values.length > 10) {
+					Rehash(values);
+				}
+				
 				return value;
 			}
+		}
+		LF = getLoadFactor();
+		if(LF <= LFConstLower) {
+			Rehash(values);
 		}
 		return null;
 	}
@@ -206,7 +216,6 @@ public class HashTable <K, V>{
 		}
 		return false;
 	}
-	
 	
 	public boolean containsValue(V value) {
 		for(int i = 0; i < values.length; i++) {
@@ -273,19 +282,37 @@ public class HashTable <K, V>{
 	@SuppressWarnings("unchecked")
 	private void Rehash(KVPair[][] oldArray) {
 		//reset values
-		values = new KVPair[oldArray.length*2][1];
 		total = 0;
-		//cycle through all items entered, and re-put them into the new array
-		for(int i = 0; i < oldArray.length; i++) {
-			KVPair[] row = oldArray[i];
-			for(int j = 0; j < row.length; j++) {
-				if(row[j] != null) {
-					put((K)row[j].key, (V)row[j].value);
+		
+		//Decrease size of values array
+		if(LF < 0.5) {
+			System.out.println("shrinking");
+			values = new KVPair[oldArray.length/2][1];
+			//cycle through all items entered, and re-put them into the new array
+			for(int i = 0; i < oldArray.length; i++) {
+				KVPair[] row = oldArray[i];
+				for(int j = 0; j < row.length; j++) {
+					if(row[j] != null) {
+						put((K)row[j].key, (V)row[j].value);
+					}
 				}
 			}
 		}
+		//Increase size of values array
+		else {
+			values = new KVPair[oldArray.length*2][1];
+			//cycle through all items entered, and re-put them into the new array
+			for(int i = 0; i < oldArray.length; i++) {
+				KVPair[] row = oldArray[i];
+				for(int j = 0; j < row.length; j++) {
+					if(row[j] != null) {
+						put((K)row[j].key, (V)row[j].value);
+					}
+				}
+			}
+		}
+		
 	}
-	
 	
 	private KVPair[] addToArray(KVPair[] oldRow) {
 		KVPair[] newArray = new KVPair[oldRow.length + 1];
