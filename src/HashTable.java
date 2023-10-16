@@ -8,11 +8,13 @@ public class HashTable <K, V>{
 	private double LF;
 	
 	public static void main(String[] args) {
-		HashTable<Integer, String> HT = new HashTable<>();
+		HashTable<Integer, String> HT = new HashTable<>(10);
 		
-		HT.put(2, "Value 2a");
-		HT.put(3, "Value 3");
-		HT.put(2, "Value2b");
+		for(int i = 0; i < 20; i++) {
+			HT.put(i, "Value" + i);
+		}
+		
+		HT.put(5, "Value5b");
 		System.out.println("\n");
 		
 		System.out.println(HT.get(2));
@@ -28,6 +30,7 @@ public class HashTable <K, V>{
 		this(11);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void put (K key, V value) {
 		//hash+mod key
 		int rowIndex = hashAndMod(key);
@@ -37,11 +40,18 @@ public class HashTable <K, V>{
 		
 		KVPair[] row = values[rowIndex];
 		
-		//If there is an empty spot take it
+		//If row is empty add it
 		if(row[0] == null) {
 			row[0] = newPair;
 		}
-		else { //if the spot is full copy previous values into new array and insert new value
+		else { //add it
+			for(int i = 0; i < row.length; i++) {
+				if(row[i].key == key) {
+					row[i].value = value; //if duplicate key replace value
+					return;
+				}
+			}
+			
 			row = addToArray(row);	
 			
 			row[row.length - 1] = newPair; 
@@ -50,9 +60,9 @@ public class HashTable <K, V>{
 		total ++;
 		
 		//rehash?
-		LF = calcLF(total, values.length);
+		LF = getLoadFactor();
 		if(LF >= 0.75) {
-			//REHASH
+			Rehash(values);
 		}
 	}
 	
@@ -74,6 +84,42 @@ public class HashTable <K, V>{
 	}
 	
 	
+	/*public V delete(K key) {
+		int rowIndex = hashAndMod(key);
+		int rowLength = values[rowIndex].length;
+		
+		values[rowIndex] = new KVPair[1];
+		
+		total --;
+		
+	}*/
+	
+	
+	public double getLoadFactor() {
+		return (total/values.length);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void Rehash(KVPair[][] oldArray) {
+		System.out.println(values.length);
+		//reset values
+		values = new KVPair[oldArray.length*2][1];
+		
+		//cycle through all items entered, and re-put them into the new array
+		for(int i = 0; i < oldArray.length; i++) {
+			KVPair[] row = oldArray[i];
+			for(int j = 0; j < row.length; j++) {
+				if(row[j] != null) {
+					put((K)row[j].key, (V)row[j].value);
+				}
+			}
+		}
+
+		System.out.println("Rehashed!");
+		System.out.println(values.length);
+	}
+	
+	
 	private KVPair[] addToArray(KVPair[] KVPs) {
 		KVPair[] newArray = new KVPair[KVPs.length + 1];
 		System.arraycopy(KVPs, 0, newArray, 0, KVPs.length);
@@ -86,10 +132,6 @@ public class HashTable <K, V>{
 		int hash = key.hashCode();
 		hash &= 0x7fffffff;
 		return (hash % values.length);
-	}
-	
-	private double calcLF(int numVal, int length) {
-		return (numVal/length);
 	}
 	
 	private static class KVPair <K, V>{
