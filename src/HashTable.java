@@ -17,9 +17,14 @@ public class HashTable <K, V>{
 		HT.put(5, "Value5b");
 		System.out.println("\n");
 		
-		System.out.println(HT.get(2));
+		System.out.println(HT.get(18));
 		System.out.println(HT.get(3));
 		System.out.println("\n");
+		
+		System.out.println(HT.delete(3));
+		System.out.println(HT.get(3));
+
+		
 	}
 	
 	public HashTable(int initialSize) {
@@ -74,7 +79,7 @@ public class HashTable <K, V>{
 		
 		//check every KVP in row for given key
 		for(int i = 0; i < row.length; i++) {
-			if(row[i].key == key) {
+			if((row[i]!=null) && (row[i].key == key)) {
 				return (V) row[i].value; //return value at matching key
 			}
 		}
@@ -84,15 +89,24 @@ public class HashTable <K, V>{
 	}
 	
 	
-	/*public V delete(K key) {
+	@SuppressWarnings("unchecked")
+	public V delete(K key) {
 		int rowIndex = hashAndMod(key);
-		int rowLength = values[rowIndex].length;
+		KVPair[] row = values[rowIndex];
+		V value;
 		
-		values[rowIndex] = new KVPair[1];
-		
-		total --;
-		
-	}*/
+		for(int i = 0; i < row.length; i++) {
+			if((row[i]!=null) && (row[i].key == key)) {
+				value = (V) row[i].value;	//save value to return
+				row[i] = null;
+				row[i] = row[row.length-1]; //set value to be deleted to last value
+				System.arraycopy(row, 0, values[rowIndex], 0, row.length - 1); //remove last value
+				total --;
+				return value;
+			}
+		}
+		return null;
+	}
 	
 	
 	public double getLoadFactor() {
