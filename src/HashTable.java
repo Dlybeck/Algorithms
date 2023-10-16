@@ -6,60 +6,114 @@ public class HashTable <K, V>{
 	private KVPair[][] values;
 	private int total = 0;
 	private double LF;
-	private final double LFConst = 0.75;
+	private final double LFConst = 2;
 	
 	public static void main(String[] args) {
-		HashTable<Integer, String> HT = new HashTable<>(9);
+		/*HashTable<Integer, String> HT = new HashTable<>(9);
 		
-		System.out.println(HT.isEmpty());
+		System.out.println("is empty? " + HT.isEmpty());
 		System.out.println("\n");
 		
-		System.out.println(HT.countEmptySlots());
+		System.out.println("# of empty slots: " + HT.countEmptySlots());
 		System.out.println("\n");
 		
-		for(int i = 0; i < 100; i++) {
+		System.out.println("Adding keys and values 0-10");
+		for(int i = 0; i < 10; i++) {
 			HT.put(i, "Value" + i);
 		}
 		
+		System.out.println("Adding duplicate 5");
 		HT.put(5, "Value5b");
 		System.out.println("\n");
 		
-		System.out.println(HT.get(18));
-		System.out.println(HT.get(3));
+		System.out.println("get key 18 " + HT.get(18));
+		System.out.println("get key 3 " + HT.get(3));
 		System.out.println("\n");
 		
-		System.out.println(HT.delete(3));
-		System.out.println(HT.get(3));
+		System.out.println("Delete key 3 " + HT.delete(3));
+		System.out.println("Get key 3 " + HT.get(3));
 		System.out.println("\n");
 		
-		System.out.println(HT.containsKey(2));
-		System.out.println(HT.containsKey(60));
+		System.out.println("Contains key 2? " + HT.containsKey(2));
+		System.out.println("Contains key 60? " + HT.containsKey(60));
 		System.out.println("\n");
 		
-		System.out.println(HT.containsValue("Value18"));
-		System.out.println(HT.containsValue("KAJEFNWF"));
+		System.out.println("Contains value 'value7'? " + HT.containsValue("Value18"));
+		System.out.println("Contains value 'KAJEFNWF'? " + HT.containsValue("KAJEFNWF"));
 		System.out.println("\n");
 		
-		System.out.println(HT.isEmpty());
+		System.out.println("is empty? " + HT.isEmpty());
 		System.out.println("\n");
 		
-		System.out.println(HT.size());
+		System.out.println("HT size: " + HT.size());
 		System.out.println("\n");
 		
-		System.out.println(HT.reverseLookup("Value7"));
-		System.out.println(HT.reverseLookup("EDFNQEWKDMLD"));
+		System.out.println("reverse lookup 'value7': " + HT.reverseLookup("Value7"));
+		System.out.println("reverse lookup 'EDFNQEWKDMLD': " + HT.reverseLookup("EDFNQEWKDMLD"));
 		System.out.println("\n");
 		
-		System.out.println(HT.getTableSize());
+		System.out.println("Get table size: " + HT.getTableSize());
 		System.out.println("\n");
 		
-		System.out.println(HT.countEmptySlots());
+		System.out.println("# of empty slots: " + HT.countEmptySlots());
 		System.out.println("\n");
 		
-		System.out.println(HT.findLongestRunLength());
-		System.out.println("\n");
-
+		System.out.println("longest run length: " + HT.findLongestRunLength());
+		System.out.println("\n");*/
 		
+		
+		
+		HashTable<String, Integer> HT = new HashTable<>(9);
+		
+		System.out.println("is empty? " + HT.isEmpty());
+		System.out.println("\n");
+		
+		System.out.println("# of empty slots: " + HT.countEmptySlots());
+		System.out.println("\n");
+		
+		System.out.println("Adding keys and values 0-10");
+		for(int i = 0; i < 10; i++) {
+			HT.put("value" + i, i);
+		}
+		
+		System.out.println("Adding duplicate value5");
+		HT.put("Value5", 5);
+		System.out.println("\n");
+		
+		System.out.println("get key value18 " + HT.get("value18"));
+		System.out.println("get key value3 " + HT.get("value3"));
+		System.out.println("\n");
+		
+		System.out.println("Delete key value3 " + HT.delete("value3"));
+		System.out.println("Get key value3 " + HT.get("value3"));
+		System.out.println("\n");
+		
+		System.out.println("Contains key value2? " + HT.containsKey("value2"));
+		System.out.println("Contains key value60? " + HT.containsKey("value60"));
+		System.out.println("\n");
+		
+		System.out.println("Contains value '7'? " + HT.containsValue(7));
+		System.out.println("Contains value '90'? " + HT.containsValue(90));
+		System.out.println("\n");
+		
+		System.out.println("is empty? " + HT.isEmpty());
+		System.out.println("\n");
+		
+		System.out.println("HT size: " + HT.size());
+		System.out.println("\n");
+		
+		System.out.println("reverse lookup 7: " + HT.reverseLookup(7));
+		System.out.println("reverse lookup '7654': " + HT.reverseLookup(7654));
+		System.out.println("\n");
+		
+		System.out.println("Get table size: " + HT.getTableSize());
+		System.out.println("\n");
+		
+		System.out.println("# of empty slots: " + HT.countEmptySlots());
+		System.out.println("\n");
+		
+		System.out.println("longest run length: " + HT.findLongestRunLength());
+		System.out.println("\n");
 	}
 	
 	public HashTable(int initialSize) {
@@ -86,7 +140,7 @@ public class HashTable <K, V>{
 		}
 		else { //add it
 			for(int i = 0; i < row.length; i++) {
-				if(row[i].key == key) {
+				if(row[i].key.equals(key)) {
 					row[i].value = value; //if duplicate key replace value
 					return;
 				}
@@ -114,7 +168,7 @@ public class HashTable <K, V>{
 		
 		//check every KVP in row for given key
 		for(int i = 0; i < row.length; i++) {
-			if((row[i]!=null) && (row[i].key == key)) {
+			if((row[i]!=null) && (row[i].key.equals(key))) {
 				return (V) row[i].value; //return value at matching key
 			}
 		}
@@ -122,8 +176,7 @@ public class HashTable <K, V>{
 		//If it doesn't exist return null
 		return null;
 	}
-	
-	
+		
 	@SuppressWarnings("unchecked")
 	public V delete(K key) {
 		int rowIndex = hashAndMod(key);
@@ -131,7 +184,7 @@ public class HashTable <K, V>{
 		V value;
 		
 		for(int i = 0; i < row.length; i++) {
-			if((row[i]!=null) && (row[i].key == key)) {
+			if((row[i]!=null) && (row[i].key.equals(key))) {
 				value = (V) row[i].value;	//save value to return
 				row[i] = null;
 				row[i] = row[row.length-1]; //set value to be deleted to last value
@@ -147,7 +200,7 @@ public class HashTable <K, V>{
 		int index = hashAndMod(key);
 		KVPair[] row = values[index];
 		for(int i = 0; i<row.length; i++) {
-			if((row[i]!=null) && (row[i].key == key)) {
+			if((row[i]!=null) && (row[i].key.equals(key))) {
 				return true;
 			}
 		}
@@ -188,13 +241,14 @@ public class HashTable <K, V>{
 		return null;
 	}
 	
-	
 	public int getTableSize() {
 		return values.length;
 	}
 	
 	public double getLoadFactor() {
-		return (total/values.length);
+		double loadTotal = total;
+		double loadLength = values.length;
+		return (double)(loadTotal/loadLength);
 	}
 	
 	public int countEmptySlots() {
@@ -214,8 +268,7 @@ public class HashTable <K, V>{
 		return longestChain;
 	}
 	
-	
-	
+		
 	
 	@SuppressWarnings("unchecked")
 	private void Rehash(KVPair[][] oldArray) {
@@ -242,7 +295,7 @@ public class HashTable <K, V>{
 	}
  	
 	private int hashAndMod(K key) {
-		int hash = key.hashCode();
+		int hash = (int) key.hashCode();
 		hash &= 0x7fffffff;
 		return (hash % values.length);
 	}
