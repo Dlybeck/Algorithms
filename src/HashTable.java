@@ -10,6 +10,9 @@ public class HashTable <K, V>{
 	public static void main(String[] args) {
 		HashTable<Integer, String> HT = new HashTable<>(10);
 		
+		System.out.println(HT.isEmpty());
+		System.out.println("\n");
+		
 		for(int i = 0; i < 20; i++) {
 			HT.put(i, "Value" + i);
 		}
@@ -23,6 +26,21 @@ public class HashTable <K, V>{
 		
 		System.out.println(HT.delete(3));
 		System.out.println(HT.get(3));
+		System.out.println("\n");
+		
+		System.out.println(HT.containsKey(2));
+		System.out.println(HT.containsKey(60));
+		System.out.println("\n");
+		
+		System.out.println(HT.containsValue("Value18"));
+		System.out.println(HT.containsValue("KAJEFNWF"));
+		System.out.println("\n");
+		
+		System.out.println(HT.isEmpty());
+		System.out.println("\n");
+		
+		System.out.println(HT.size());
+		System.out.println("\n");
 
 		
 	}
@@ -108,6 +126,38 @@ public class HashTable <K, V>{
 		return null;
 	}
 	
+	public boolean containsKey(K key) {
+		int index = hashAndMod(key);
+		KVPair[] row = values[index];
+		for(int i = 0; i<row.length; i++) {
+			if((row[i]!=null) && (row[i].key == key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	public boolean containsValue(V value) {
+		for(int i = 0; i < values.length; i++) {
+			for(int j = 0; j < values[i].length; j++) {
+				if ((values[i][j]!=null) && (values[i][j].value.equals(value))) { //Will this work if value is not a String?
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isEmpty() {
+		return total==0;
+	}
+	
+	public int size() {
+		return total;
+	}
+	
 	
 	public double getLoadFactor() {
 		return (total/values.length);
@@ -118,7 +168,7 @@ public class HashTable <K, V>{
 		System.out.println(values.length);
 		//reset values
 		values = new KVPair[oldArray.length*2][1];
-		
+		total = 0;
 		//cycle through all items entered, and re-put them into the new array
 		for(int i = 0; i < oldArray.length; i++) {
 			KVPair[] row = oldArray[i];
