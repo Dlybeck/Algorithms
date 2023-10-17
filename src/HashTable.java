@@ -1,5 +1,11 @@
+/**
+* This is code for a hash table
+* It takes a key and a value and adds them to a hash table structure to be stored for later use
+*
+* @author David Lybeck
+* @version 2023.10.16
+*/
 @SuppressWarnings("rawtypes")
-
 public class HashTable <K, V>{
 	
 	private KVPair[][] values;
@@ -8,6 +14,9 @@ public class HashTable <K, V>{
 	private final double LFConstUpper = 2;
 	private final double LFConstLower = 0.5;
 	
+	/**
+	* Main method, with lines to test all the individual methods in this class
+	*/
 	public static void main(String[] args) {
 		/*HashTable<Integer, String> HT = new HashTable<>(9);
 		
@@ -116,14 +125,29 @@ public class HashTable <K, V>{
 		System.out.println("\n");
 	}
 	
+	/**
+	* Constructor for the hash table type
+	*
+	* @param initialSize Int value for how large the initial hash table structure will be
+	*/
 	public HashTable(int initialSize) {
 		//Initialize Values
 		this.values = new KVPair[initialSize][1];
 	}
+	
+	/**
+	* Links to the constructor for the hash table type with default size 11
+	*/
 	public HashTable() {
 		this(11);
 	}
 	
+	/**
+	* Adds a new key/value pair to the hash table
+	*
+	* @param key The key to be added
+	* @param value, the value to be added
+	*/
 	@SuppressWarnings("unchecked")
 	public void put (K key, V value) {
 		int rowIndex = hashAndMod(key); //hash+mod key
@@ -158,6 +182,12 @@ public class HashTable <K, V>{
 		}
 	}
 	
+	/**
+	* Gets the value corresponding to the given key
+	*
+	* @param key The key matching with the desired value
+	* @return Value matching the given key
+	*/
 	@SuppressWarnings("unchecked")
 	public V get(K key){
 		//get hashed index
@@ -171,9 +201,15 @@ public class HashTable <K, V>{
 			}
 		}
 		
-		return null;//If it doesn't exist return null
+		return null;//If it doesn't exist
 	}
 		
+	/**
+	* removes the desired value from the hashtable
+	*
+	* @param key The key for the key/value pair that will be removed
+	* @return The value of the key/value pair being removed
+	*/
 	@SuppressWarnings("unchecked")
 	public V delete(K key) {
 		V value;
@@ -203,6 +239,12 @@ public class HashTable <K, V>{
 		return null;
 	}
 	
+	/**
+	* Checks if given key is in the hash table
+	*
+	* @param key that will be searched for in the hash table
+	* @return True if key is in the hash table, False if not.
+	*/
 	public boolean containsKey(K key) {
 		int index = hashAndMod(key);
 		KVPair[] row = values[index];
@@ -214,6 +256,12 @@ public class HashTable <K, V>{
 		return false;
 	}
 	
+	/**
+	* Checks if given value is in the hash table
+	*
+	* @param value that will be searched for in the hash table
+	* @return True if value is in the hash table, False if not.
+	*/
 	public boolean containsValue(V value) {
 		for(int i = 0; i < values.length; i++) {
 			for(int j = 0; j < values[i].length; j++) {
@@ -225,14 +273,30 @@ public class HashTable <K, V>{
 		return false;
 	}
 	
+	/**
+	* Checks if the hash table is empty
+	*
+	* @return True if the hash table is empty, False if not.
+	*/
 	public boolean isEmpty() {
 		return total==0;
 	}
 	
+	/**
+	* Finds the number of key/value pairs in the hashtable
+	*
+	* @return Int Size of the hash table
+	*/
 	public int size() {
 		return total;
 	}
 	
+	/**
+	* Finds the key corresponding with a given value
+	*
+	* @param value the value corresponding with the desired key
+	* @return key The key corresponding with the given value
+	*/
 	@SuppressWarnings("unchecked")
 	public K reverseLookup(V value) {
 		for(int i = 0; i < values.length; i++) {
@@ -242,20 +306,34 @@ public class HashTable <K, V>{
 				}
 			}
 		}
-		
 		return null;
 	}
 	
+	/**
+	* Finds the size of the primary internal array
+	*
+	* @return int Size of internal array
+	*/
 	public int getTableSize() {
 		return values.length;
 	}
 	
+	/**
+	* Finds the load factor of the hash table
+	*
+	* @return double The load factor of the hash table
+	*/
 	public double getLoadFactor() {
 		double loadTotal = total;
 		double loadLength = values.length;
 		return (double)(loadTotal/loadLength);
 	}
 	
+	/**
+	* finds the number of empty slots in the hash table
+	*
+	* @return int The number of empty slots
+	*/
 	public int countEmptySlots() {
 		int empty = 0;
 		for(int i = 0; i<values.length;  i++) {
@@ -264,6 +342,11 @@ public class HashTable <K, V>{
 		return empty;
 	}
 	
+	/**
+	* Finds the length of the longest chain
+	*
+	* @return int length of longest chain
+	*/
 	public int findLongestRunLength() {
 		int longestChain = 0;
 		for(int i = 0; i < values.length; i++) {
@@ -273,7 +356,7 @@ public class HashTable <K, V>{
 	}
 	
 		
-	
+	//rehashes array and adds old values back in
 	@SuppressWarnings("unchecked")
 	private void Rehash(KVPair[][] oldArray) {
 		//reset values
@@ -309,6 +392,7 @@ public class HashTable <K, V>{
 		
 	}
 	
+	//adds one empty spot to an array
 	private KVPair[] addToArray(KVPair[] oldRow) {
 		KVPair[] newArray = new KVPair[oldRow.length + 1];
 		System.arraycopy(oldRow, 0, newArray, 0, oldRow.length);
@@ -316,12 +400,14 @@ public class HashTable <K, V>{
 		return newArray;
 	}
  	
+	//hashes and mods a given key
 	private int hashAndMod(K key) {
 		int hash = (int) key.hashCode();
 		hash &= 0x7fffffff;
 		return (hash % values.length);
 	}
 	
+	//Class for Key/value pairs used throughout the hash table
 	private static class KVPair <K, V>{
 		private K key;
 		private V value;
