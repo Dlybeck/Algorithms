@@ -300,7 +300,7 @@ public class HashTable <K, V>{
 		}
 		//Increase size of values array
 		else {
-			values = new KVPair[oldArray.length*2][1];
+			values = new KVPair[oldArray.length*2+1][1];
 			//cycle through all items entered, and re-put them into the new array
 			for(int i = 0; i < oldArray.length; i++) {
 				KVPair[] row = oldArray[i];
