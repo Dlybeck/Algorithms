@@ -126,8 +126,7 @@ public class HashTable <K, V>{
 	
 	@SuppressWarnings("unchecked")
 	public void put (K key, V value) {
-		//hash+mod key
-		int rowIndex = hashAndMod(key);
+		int rowIndex = hashAndMod(key); //hash+mod key
 		
 		//Create KVP to be added
 		KVPair<K, V> newPair = new KVPair<K, V>(key, value);
@@ -141,13 +140,12 @@ public class HashTable <K, V>{
 		else { //add it
 			for(int i = 0; i < row.length; i++) {
 				if(row[i].key.equals(key)) {
-					row[i].value = value; //if duplicate key replace value
+					row[i].value = value; //if duplicate key replace value and return
 					return;
 				}
 			}
-			
+			//if not duplicate add new kvp
 			values[rowIndex] = addToArray(row);	
-			
 			values[rowIndex][row.length] = newPair; 
 		}
 		
@@ -173,15 +171,14 @@ public class HashTable <K, V>{
 			}
 		}
 		
-		//If it doesn't exist return null
-		return null;
+		return null;//If it doesn't exist return null
 	}
 		
 	@SuppressWarnings("unchecked")
 	public V delete(K key) {
+		V value;
 		int rowIndex = hashAndMod(key);
 		KVPair[] row = values[rowIndex];
-		V value;
 		
 		for(int i = 0; i < row.length; i++) {
 			if((row[i]!=null) && (row[i].key.equals(key))) {
@@ -190,13 +187,13 @@ public class HashTable <K, V>{
 				row[i] = row[row.length-1]; //set value to be deleted to last value
 				System.arraycopy(row, 0, values[rowIndex], 0, row.length - 1); //remove last value
 				total --;
-				
+				 
+				//Check and see if needs to be rehashed lower
 				LF = getLoadFactor();
 				if(LF <= LFConstLower && values.length > 10) {
 					Rehash(values);
 				}
-				
-				return value;
+				return value; //Return Deleted value
 			}
 		}
 		LF = getLoadFactor();
@@ -225,7 +222,6 @@ public class HashTable <K, V>{
 				}
 			}
 		}
-		
 		return false;
 	}
 	
@@ -241,7 +237,7 @@ public class HashTable <K, V>{
 	public K reverseLookup(V value) {
 		for(int i = 0; i < values.length; i++) {
 			for(int j = 0; j < values[i].length; j++) {
-				if ((values[i][j]!=null) && (values[i][j].value.equals(value))) { //Will this work if value is not a String?
+				if ((values[i][j]!=null) && (values[i][j].value.equals(value))) {
 					return (K) values[i][j].key;
 				}
 			}
@@ -273,7 +269,6 @@ public class HashTable <K, V>{
 		for(int i = 0; i < values.length; i++) {
 			if(values[i].length > longestChain) longestChain = values[i].length;
 		}
-		
 		return longestChain;
 	}
 	
