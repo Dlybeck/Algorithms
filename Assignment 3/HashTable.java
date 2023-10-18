@@ -71,7 +71,6 @@ public class HashTable <K, V>{
 		System.out.println("\n");*/
 		
 		
-		
 		HashTable<String, Integer> HT = new HashTable<>(20);
 		
 		System.out.println("is empty? " + HT.isEmpty());
