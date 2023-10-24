@@ -21,19 +21,21 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	
 	@SuppressWarnings("unchecked")
 	public void put(K key, V value) {
-		Node newNode;
+		Node newNode = null;
 		//if empty 
 		if(root == null) {
 			root = new Node(key, value);
 			root.isRed = false;
-			newNode = root;
+			//newNode = root;
 		}
 		else {
 			//add new node
 			newNode = findAndAdd(root, key, value);
-			//go back up and fix tree
-			
 		}
+		
+		//GO back up and fix the tree
+		
+		
 		
 		System.out.print(newNode.value);
 	}
