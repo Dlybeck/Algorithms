@@ -21,28 +21,32 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	
 	@SuppressWarnings("unchecked")
 	public void put(K key, V value) {
+		Node newNode;
 		//if empty 
-		if(root.key == null) {
-			root.key = key;
-			root.value = value;
+		if(root == null) {
+			root = new Node(key, value);
+			root.isRed = false;
+			newNode = root;
 		}
 		else {
 			//add new node
-			Node newNode = findAndAdd(root, key, value);
+			newNode = findAndAdd(root, key, value);
 			//go back up and fix tree
 			
-			System.out.print(newNode.value);
 		}
 		
+		System.out.print(newNode.value);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private Node findAndAdd(Node currentNode, K key, V value) {
-		//go left if possible
+		//go left?
 		if(key.compareTo((K) currentNode.key) < 0) {
+			//recurse if there is a child
 			if(currentNode.LChild != null) {
 				findAndAdd(currentNode.LChild, key, value);
 			}
+			//otherwise add new node
 			else {
 				Node newNode = new Node(key,value);
 				//set up new node
@@ -51,11 +55,13 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 				return newNode;
 			}
 		}
-		//go right if possible
+		//go right?
 		else if(key.compareTo((K) currentNode.key) > 0) {
+			//recurse if there is a child
 			if(currentNode.RChild != null) {
 				findAndAdd(currentNode.RChild, key, value);
 			}
+			//otherwise add new node
 			else {
 				Node newNode = new Node(key,value);
 				//set up new node
@@ -64,14 +70,9 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 				return newNode;
 			}
 		}
-		//replace value
-		else {
-			currentNode.value = value;
-			return currentNode;
-		}
-		
-		//backup
-		return null;
+		//replace value if keys are equal
+		currentNode.value = value;
+		return currentNode;
 		
 	}
 	
