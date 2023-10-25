@@ -6,42 +6,33 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	public static void main(String[] args) {
 		RedBlackTree tree = new RedBlackTree();
 		
-		
+			
 		tree.put(2, "b");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
+		System.out.println("-------------------------");
+
 		tree.put(1, "a");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(6, "f");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(7, "g");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(8, "h");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(9, "i");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(4, "d");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
-		tree.put(5, "e");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
-		
+		System.out.println("-------------------------");
+
 		tree.put(3, "c");
-		//tree.printRedBlackTree(tree.root, "", true);
-		System.out.println(tree.root.value + "  " + tree.root.key);
+		System.out.println("-------------------------");
+
+		tree.put(4, "d");
+		System.out.println("-------------------------");
+
+		tree.put(5, "e");
+		System.out.println("-------------------------");
+
+		tree.put(6, "f");
+		System.out.println("-------------------------");
+
+		tree.put(7, "g");
+		System.out.println("-------------------------");
+
+		tree.put(8, "h");
+		System.out.println("-------------------------");
+
+		tree.put(9, "i");
+		System.out.println("-------------------------");
 		
 	}
 	
@@ -66,8 +57,10 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			newNode = findAndAdd(root, key, value);
 		}
 		
+		this.printRedBlackTree(this.root, "", true);
+		
 		//Go back up and fix the tree
-		//balance(newNode);
+		balance(newNode);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -102,8 +95,10 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 				return newNode;
 			}
 		}
+		else {
+			currentNode.value = value;
+		}
 		//replace value if keys are equal
-		currentNode.value = value;
 		return currentNode;
 	}
 	
@@ -113,6 +108,8 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			//is node red, and right child of black parent? if so rotate left
 			if((node.isRed && (node.parent.RChild == node)) && !node.parent.isRed) {
 				rotateLeft(node, node.parent);
+				System.out.println("Black Parent with red right child fixed:");
+				this.printRedBlackTree(this.root, "", true);
 			}
 			
 			//is node red and child of red node?
