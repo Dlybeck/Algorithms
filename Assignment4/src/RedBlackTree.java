@@ -33,9 +33,8 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			newNode = findAndAdd(root, key, value);
 		}
 		
-		//GO back up and fix the tree
-		
-		
+		//Go back up and fix the tree
+		balance(newNode);
 		
 		System.out.print(newNode.value);
 	}
@@ -75,7 +74,51 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		//replace value if keys are equal
 		currentNode.value = value;
 		return currentNode;
+	}
+	
+	private void balance(Node node) {
+		//check if root (make sure node has parent)
+		if(node.parent != null) {
+			//is node red, and right child of black parent? if so rotate left
+			if(node.isRed && node.parent.RChild == node) && !node.parent.isRed) {
+				rotateLeft(node, node.parent);
+			}
+			
+			//is node red and child of red node?
+			
+		}
+	}
+	
+	private void rotateLeft(Node Rchild, Node parent) {
+		//MIGHT BE ON WRONG TRACK
+		swapData(Rchild, parent);
+		swapPointers(parent);
+	}
+	
+	private void rotateRight(Node Lchild, Node parent) {
+		swapData(Lchild, parent);
+		swapPointersRight(parent);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void swapPointersRight(Node parent) {
 		
+	}
+	
+	//Swaps data for rotate methods
+	@SuppressWarnings("unchecked")
+	private void swapData(Node node1, Node node2){
+		K tempk = (K) node1.key;
+		V tempv = (V) node1.value;
+		node1.key = node2.key;
+		node1.value = node2.value;
+		node2.key = tempk;
+		node2.value = tempv;
+	}
+	
+	//balance a tree starting at a given node and going up
+	private void changeColor(Node node) {
+		node.isRed = !node.isRed;
 	}
 	
 	
