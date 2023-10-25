@@ -89,20 +89,48 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		}
 	}
 	
-	private void rotateLeft(Node Rchild, Node parent) {
-		//MIGHT BE ON WRONG TRACK
-		swapData(Rchild, parent);
-		swapPointers(parent);
-	}
-	
-	private void rotateRight(Node Lchild, Node parent) {
-		swapData(Lchild, parent);
-		swapPointersRight(parent);
+	@SuppressWarnings("unchecked")
+	private void rotateLeft(Node kid, Node parent) {
+		parent.RChild = kid.LChild;
+		if(kid.LChild != null) {
+			kid.LChild.parent = parent;
+		}
+		kid.parent = parent.parent;
+		//parent is root
+		if(parent.parent == null) {
+			this.root = kid;
+		}
+		//dont continue this part if kid is root
+		else if(parent == parent.parent.LChild) {
+			parent.parent.LChild = kid;
+		}
+		else {
+			parent.parent.RChild = kid;
+		}
+		kid.LChild = parent;
+		parent.parent = kid;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void swapPointersRight(Node parent) {
-		
+	private void rotateRight(Node kid, Node parent) {
+		parent.RChild = kid.LChild;
+		if(kid.LChild != null) {
+			kid.LChild.parent = parent;
+		}
+		kid.parent = parent.parent;
+		//parent is root
+		if(parent.parent == null) {
+			this.root = kid;
+		}
+		//dont continue this part if kid is root
+		else if(parent == parent.parent.LChild) {
+			parent.parent.LChild = kid;
+		}
+		else {
+			parent.parent.RChild = kid;
+		}
+		kid.LChild = parent;
+		parent.parent = kid;
 	}
 	
 	//Swaps data for rotate methods
