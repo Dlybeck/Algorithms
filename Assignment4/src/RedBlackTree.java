@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
 public class RedBlackTree <K extends Comparable<K>, V> {
@@ -6,10 +6,43 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	public static void main(String[] args) {
 		RedBlackTree tree = new RedBlackTree();
 		
-		tree.put(1, "a");
+		
 		tree.put(2, "b");
-		tree.put(3, "c");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(1, "a");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(6, "f");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(7, "g");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(8, "h");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(9, "i");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
 		tree.put(4, "d");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(5, "e");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
+		tree.put(3, "c");
+		//tree.printRedBlackTree(tree.root, "", true);
+		System.out.println(tree.root.value + "  " + tree.root.key);
+		
 	}
 	
 	
@@ -26,7 +59,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		if(root == null) {
 			root = new Node(key, value);
 			root.isRed = false;
-			//newNode = root;
+			newNode = root;
 		}
 		else {
 			//add new node
@@ -34,9 +67,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		}
 		
 		//Go back up and fix the tree
-		balance(newNode);
-		
-		System.out.print(newNode.value);
+		//balance(newNode);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -80,7 +111,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		//check if root (make sure node has parent)
 		if(node.parent != null) {
 			//is node red, and right child of black parent? if so rotate left
-			if(node.isRed && node.parent.RChild == node) && !node.parent.isRed) {
+			if((node.isRed && (node.parent.RChild == node)) && !node.parent.isRed) {
 				rotateLeft(node, node.parent);
 			}
 			
@@ -149,7 +180,19 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		node.isRed = !node.isRed;
 	}
 	
-	
+	private void printRedBlackTree(Node node, String prefix, boolean isTail) {
+	    if (node != null) {
+	    	String childLabel = "";
+	        String childPrefix = isTail ? "    " : "│   ";
+	        String nodeType = isTail ? "└── " : "├── ";
+	        if(node.parent != null) childLabel = (node == node.parent.LChild) ? "L" : "R";  // Add "L" for left child, "R" for right child
+
+	        System.out.println(prefix + nodeType + node.key + childLabel + " (" + (node.isRed ? "Red" : "Black") + ")");
+	        printRedBlackTree(node.LChild, prefix + childPrefix, false);
+	        printRedBlackTree(node.RChild, prefix + childPrefix, true);
+	    }
+	}
+
 	
 	
 	private static class Node <K extends Comparable<K>, V>{
