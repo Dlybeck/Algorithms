@@ -7,32 +7,34 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		RedBlackTree tree = new RedBlackTree();
 		
 			
+		
+		tree.put(6, "f");
+		System.out.println("-------------------------");
+		
 		tree.put(2, "b");
 		System.out.println("-------------------------");
 
 		tree.put(1, "a");
 		System.out.println("-------------------------");
-
-		tree.put(3, "c");
+		
+		/*tree.put(7, "g");
 		System.out.println("-------------------------");
 
 		tree.put(4, "d");
+		System.out.println("-------------------------");
+		
+		tree.put(9, "i");
 		System.out.println("-------------------------");
 
 		tree.put(5, "e");
 		System.out.println("-------------------------");
 
-		tree.put(6, "f");
-		System.out.println("-------------------------");
-
-		tree.put(7, "g");
+		tree.put(3, "c");
 		System.out.println("-------------------------");
 
 		tree.put(8, "h");
-		System.out.println("-------------------------");
+		System.out.println("-------------------------");*/
 
-		tree.put(9, "i");
-		System.out.println("-------------------------");
 		
 	}
 	
@@ -104,17 +106,46 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	
 	private void balance(Node node) {
 		//check if root (make sure node has parent)
-		if(node.parent != null) {
+		if(node.RChild != null) {
 			//is node red, and right child of black parent? if so rotate left
-			if((node.isRed && (node.parent.RChild == node)) && !node.parent.isRed) {
-				rotateLeft(node, node.parent);
-				System.out.println("Black Parent with red right child fixed:");
-				this.printRedBlackTree(this.root, "", true);
+			if(node.RChild.isRed && !node.isRed) {
+				rotateLeft(node.RChild, node);
+				//System.out.println("Black Parent with red right child fixed:");
+				//this.printRedBlackTree(this.root, "", true);
 			}
-			
-			//is node red and child of red node?
-			
 		}
+			
+		//two red nodes in a row?
+		if(node.LChild != null && node.LChild.LChild != null) {
+			if(node.LChild.isRed && node.LChild.LChild.isRed) {
+				rotateRight(node.LChild, node);
+				//System.out.println("Two Red Children in a row fixed:");
+				//this.printRedBlackTree(this.root, "", true);
+			}
+		}
+		//Two Red Children of one Black node?
+		if(node.LChild != null && node.RChild != null) {
+			if((node.RChild.isRed && node.LChild.isRed) && !node.isRed) {
+				changeColor(node);
+				changeColor(node.LChild);
+				changeColor(node.RChild);
+				//System.out.println("Two red children of Black parent Fixed:");
+				//this.printRedBlackTree(this.root, "", true);
+			}
+		}
+		
+		//Red Root?
+		if(this.root.isRed) {
+			changeColor(this.root);
+			//System.out.println("Red Root Fixed:");
+			//this.printRedBlackTree(this.root, "", true);
+		}
+		
+		if(node.parent != null) {
+			balance(node.parent);
+		}
+		
+
 	}
 	
 	@SuppressWarnings("unchecked")
