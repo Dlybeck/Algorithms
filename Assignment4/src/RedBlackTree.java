@@ -6,34 +6,45 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	public static void main(String[] args) {
 		RedBlackTree tree = new RedBlackTree();
 		
-			
 		
-		tree.put(6, "f");
-		System.out.println("-------------------------");
-		
-		tree.put(2, "b");
-		System.out.println("-------------------------");
-
-		tree.put(1, "a");
+		System.out.println("Adding: 7");
+		tree.put(7, "g");
 		System.out.println("-------------------------");
 		
-		/*tree.put(7, "g");
-		System.out.println("-------------------------");
-
+		System.out.println("Adding: 4");
 		tree.put(4, "d");
 		System.out.println("-------------------------");
 		
+		System.out.println("Adding: 9");
 		tree.put(9, "i");
 		System.out.println("-------------------------");
-
+		
+		System.out.println("Adding: 2");
+		tree.put(2, "b");
+		System.out.println("-------------------------");
+		
+		System.out.println("Adding: 6");
+		tree.put(6, "f");
+		System.out.println("-------------------------");
+		
+		System.out.println("Adding: 8");
+		tree.put(8, "h");
+		System.out.println("-------------------------");
+		
+		System.out.println("Adding: 5");
 		tree.put(5, "e");
 		System.out.println("-------------------------");
 
-		tree.put(3, "c");
+		System.out.println("Adding: 1");
+		tree.put(1, "a");
 		System.out.println("-------------------------");
 
-		tree.put(8, "h");
-		System.out.println("-------------------------");*/
+		System.out.println("Adding: 3");
+		tree.put(3, "c");
+		System.out.println("-------------------------");
+		
+		tree.rotateRight(tree.root.LChild, tree.root.LChild.LChild);
+		tree.printRedBlackTree(tree.root, "", true);
 
 		
 	}
@@ -47,165 +58,188 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	
 	@SuppressWarnings("unchecked")
 	public void put(K key, V value) {
-		Node newNode = null;
 		//if empty 
 		if(root == null) {
-			root = new Node(key, value);
-			root.isRed = false;
-			newNode = root;
+			Node newNode = new Node(key, value);
+			root = newNode;
+			root.flipColor();
+			this.printRedBlackTree(this.root, "", true);
 		}
 		else {
 			//add new node
-			newNode = findAndAdd(root, key, value);
+			Node newNode = findAndAdd(root, key, value, null);
+			if(newNode.LChild == null  && newNode.RChild == null) {
+				this.printRedBlackTree(this.root, "", true);
+				
+				//Go back up and fix the tree
+				System.out.println("Recursing and looking at node " + newNode.key);
+				balance(newNode);
+			}
+			
 		}
-		
-		this.printRedBlackTree(this.root, "", true);
-		
-		//Go back up and fix the tree
-		balance(newNode);
+	
 	}
 	
-	@SuppressWarnings("unchecked")
 	private Node findAndAdd(Node currentNode, K key, V value) {
+		return(findAndAdd(currentNode, key, value, null));
+	}
+	
+	//Added returns the value that was added and is only chaned when it is created
+	@SuppressWarnings("unchecked")
+	private Node findAndAdd(Node currentNode, K key, V value, Node added) {
+		Node newNode = null;
 		//go left?
 		if(key.compareTo((K) currentNode.key) < 0) {
 			//recurse if there is a child
 			if(currentNode.LChild != null) {
-				findAndAdd(currentNode.LChild, key, value);
+				added = findAndAdd(currentNode.LChild, key, value, added);
 			}
 			//otherwise add new node
 			else {
-				Node newNode = new Node(key,value);
+				newNode = new Node(key,value);
 				//set up new node
 				currentNode.LChild = newNode;
-				newNode.parent = currentNode;
-				return newNode;
+				currentNode.LChild.parent = currentNode;
+				added = currentNode.LChild;
 			}
 		}
 		//go right?
 		else if(key.compareTo((K) currentNode.key) > 0) {
 			//recurse if there is a child
 			if(currentNode.RChild != null) {
-				findAndAdd(currentNode.RChild, key, value);
+				added = findAndAdd(currentNode.RChild, key, value, added);
 			}
 			//otherwise add new node
 			else {
-				Node newNode = new Node(key,value);
+				newNode = new Node(key,value);
 				//set up new node
 				currentNode.RChild = newNode;
-				newNode.parent = currentNode;
-				return newNode;
+				currentNode.RChild.parent = currentNode;
+				added = currentNode.RChild;
+
 			}
 		}
 		else {
+			//replace value
 			currentNode.value = value;
+			newNode  = currentNode;
 		}
-		//replace value if keys are equal
-		return currentNode;
+		
+		return added;
+		
+		
+		
 	}
 	
 	private void balance(Node node) {
-		//check if root (make sure node has parent)
-		if(node.RChild != null) {
+		/*if(node.RChild != null) {
 			//is node red, and right child of black parent? if so rotate left
 			if(node.RChild.isRed && !node.isRed) {
 				rotateLeft(node.RChild, node);
-				//System.out.println("Black Parent with red right child fixed:");
-				//this.printRedBlackTree(this.root, "", true);
+				System.out.println("Black Parent with red right child fixed:");
+				this.printRedBlackTree(this.root, "", true);
 			}
 		}
 			
 		//two red nodes in a row?
 		if(node.LChild != null && node.LChild.LChild != null) {
 			if(node.LChild.isRed && node.LChild.LChild.isRed) {
+				//REWRITE ROTATE RIGHT
 				rotateRight(node.LChild, node);
-				//System.out.println("Two Red Children in a row fixed:");
-				//this.printRedBlackTree(this.root, "", true);
+
+				//This line breaking after rotation!!!
+				this.printRedBlackTree(this.root, "", true);
 			}
 		}
+		
 		//Two Red Children of one Black node?
 		if(node.LChild != null && node.RChild != null) {
 			if((node.RChild.isRed && node.LChild.isRed) && !node.isRed) {
-				changeColor(node);
-				changeColor(node.LChild);
-				changeColor(node.RChild);
-				//System.out.println("Two red children of Black parent Fixed:");
-				//this.printRedBlackTree(this.root, "", true);
+				node.flipColor();
+				node.LChild.flipColor();
+				node.RChild.flipColor();
+				System.out.println("Two red children of Black parent Fixed:");
+				this.printRedBlackTree(this.root, "", true);
 			}
 		}
 		
 		//Red Root?
 		if(this.root.isRed) {
-			changeColor(this.root);
-			//System.out.println("Red Root Fixed:");
-			//this.printRedBlackTree(this.root, "", true);
+			this.root.flipColor();
+			System.out.println("Red Root Fixed:");
+			this.printRedBlackTree(this.root, "", true);
 		}
+		
 		
 		if(node.parent != null) {
+			System.out.println("Recursing and looking at node: " + node.parent.key);
 			balance(node.parent);
-		}
-		
+		}*/
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void rotateLeft(Node parent, Node child) {
+	    Node temp = child.LChild;
+	    child.LChild = parent;
+	    parent.RChild = temp;
 
+	    if (temp != null) {
+	        temp.parent = parent;
+	    }
+
+	    child.parent = parent.parent;
+
+	    if (parent.parent == null) {
+	        root = child;
+	    } else if (parent == parent.parent.LChild) {
+	        parent.parent.LChild = child;
+	    } else {
+	        parent.parent.RChild = child;
+	    }
+
+	    parent.parent = child;
 	}
+
 	
 	@SuppressWarnings("unchecked")
-	private void rotateLeft(Node kid, Node parent) {
-		parent.RChild = kid.LChild;
-		if(kid.LChild != null) {
-			kid.LChild.parent = parent;
-		}
-		kid.parent = parent.parent;
-		//parent is root
-		if(parent.parent == null) {
-			this.root = kid;
-		}
-		//dont continue this part if kid is root
-		else if(parent == parent.parent.LChild) {
-			parent.parent.LChild = kid;
-		}
-		else {
-			parent.parent.RChild = kid;
-		}
-		kid.LChild = parent;
-		parent.parent = kid;
+	private void rotateRight(Node parent, Node child) {
+	    Node temp = child.RChild;
+	    child.RChild = parent; // make the right child of child to be the parent
+	    parent.LChild = temp; // make the left child parent be the stored right child of child
+
+	    // If stored right child of the child is not null, update its parent
+	    if (temp != null) temp.parent = parent;
+
+	    // make the parent of the child the parent of the parent
+	    child.parent = parent.parent;
+
+	    // make the parent of parent to be the child node
+	    if (parent.parent == null) {
+	        // If parent was root, make child the root
+	        root = child;
+	    }
+	    else if (parent == parent.parent.LChild) { // If the parent is a left child
+	        parent.parent.LChild = child;
+	    } 
+	    else { // If the parent is a right child
+	        parent.parent.RChild = child;
+	    }
+	    
+	    parent.parent = child; //make parent's parent, child
 	}
+
+
 	
 	@SuppressWarnings("unchecked")
-	private void rotateRight(Node kid, Node parent) {
-		parent.RChild = kid.LChild;
-		if(kid.LChild != null) {
-			kid.LChild.parent = parent;
-		}
-		kid.parent = parent.parent;
-		//parent is root
-		if(parent.parent == null) {
-			this.root = kid;
-		}
-		//dont continue this part if kid is root
-		else if(parent == parent.parent.LChild) {
-			parent.parent.LChild = kid;
-		}
-		else {
-			parent.parent.RChild = kid;
-		}
-		kid.LChild = parent;
-		parent.parent = kid;
-	}
-	
-	//Swaps data for rotate methods
-	@SuppressWarnings("unchecked")
-	private void swapData(Node node1, Node node2){
-		K tempk = (K) node1.key;
-		V tempv = (V) node1.value;
-		node1.key = node2.key;
-		node1.value = node2.value;
-		node2.key = tempk;
-		node2.value = tempv;
-	}
-	
-	//balance a tree starting at a given node and going up
-	private void changeColor(Node node) {
-		node.isRed = !node.isRed;
+	private void swapData(Node x, Node y) {
+		K tempK = (K) x.key;
+		V tempV = (V) x.value;
+		
+		x.key = y.key;
+		x.value = y.value;
+		
+		y.key = tempK;
+		y.value = tempV;
 	}
 	
 	private void printRedBlackTree(Node node, String prefix, boolean isTail) {
@@ -213,9 +247,23 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	    	String childLabel = "";
 	        String childPrefix = isTail ? "    " : "│   ";
 	        String nodeType = isTail ? "└── " : "├── ";
-	        if(node.parent != null) childLabel = (node == node.parent.LChild) ? "L" : "R";  // Add "L" for left child, "R" for right child
+	        if(node.parent != null) {
+	        	childLabel = (node == node.parent.LChild) ? "L" : "R";  // Add "L" for left child, "R" for right child
+	        }
 
-	        System.out.println(prefix + nodeType + node.key + childLabel + " (" + (node.isRed ? "Red" : "Black") + ")");
+	        String relations = "";
+	        if(node.parent != null) relations += "P=" + node.parent.key;
+	        else relations += "P=N";
+	        
+	        if(node.LChild != null) relations += " LC=" + node.LChild.key;
+	        else relations += " LC=N";
+	        
+	        if(node.RChild != null) relations += " RC=" + node.RChild.key;
+	        else relations += " RC=N";
+	        
+	        relations = "";
+	        
+	        System.out.println(prefix + nodeType + node.key + childLabel + " (" + (node.isRed ? "Red" : "Black") + ") " + relations);
 	        printRedBlackTree(node.LChild, prefix + childPrefix, false);
 	        printRedBlackTree(node.RChild, prefix + childPrefix, true);
 	    }
@@ -232,6 +280,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		private Node RChild;
 		private Node LChild;
 		private Node parent;
+		private Node temp;
 		
 		public Node(K key, V value){
 			this.key = key;
@@ -239,6 +288,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			this.isRed = true;
 			this.size = 1;
 			this.RChild = null;
+			this.temp = null;
 			this.LChild = null;
 			this.parent = null;		
 		}
@@ -250,6 +300,19 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		@SuppressWarnings("unchecked")
 		public void flipColor() {
 			this.isRed = !this.isRed;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public Node copy() {
+			Node newNode = new Node(this.key, this.value);
+			newNode.isRed = this.isRed;
+			newNode.size = this.size;
+			newNode.RChild = this.RChild;
+			newNode.LChild = this.LChild;
+			newNode.temp = this.temp;
+			newNode.parent = this.parent;
+			
+			return newNode;
 		}
 	}
 }
