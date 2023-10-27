@@ -43,8 +43,10 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		tree.put(3, "c");
 		System.out.println("-------------------------");
 		
-		tree.rotateRight(tree.root.LChild, tree.root.LChild.LChild);
-		tree.printRedBlackTree(tree.root, "", true);
+		//tree.rotateRight(tree.root, tree.root.LChild);
+		//tree.printRedBlackTree(tree.root, "", true);
+		//tree.rotateLeft(tree.root, tree.root.RChild);
+		//tree.printRedBlackTree(tree.root, "", true);
 
 		
 	}
@@ -72,8 +74,8 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 				this.printRedBlackTree(this.root, "", true);
 				
 				//Go back up and fix the tree
-				System.out.println("Recursing and looking at node " + newNode.key);
-				balance(newNode);
+				//System.out.println("Recursing and looking at node " + newNode.key);
+				fix(newNode);
 			}
 			
 		}
@@ -131,24 +133,30 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		
 	}
 	
-	private void balance(Node node) {
-		/*if(node.RChild != null) {
-			//is node red, and right child of black parent? if so rotate left
+	private void fix(Node node) {
+		//System.out.println("Recursing and looking at node: " + node.key);
+		System.out.println("NODE IS " + node.key);
+		
+		//is node red, and right child of black parent? if so rotate left
+		if(node.RChild != null) {
 			if(node.RChild.isRed && !node.isRed) {
-				rotateLeft(node.RChild, node);
+				this.printRedBlackTree(this.root, "", true);
+				rotateLeft(node, node.RChild);
 				System.out.println("Black Parent with red right child fixed:");
 				this.printRedBlackTree(this.root, "", true);
+				System.out.println("node IS " + node.key);
+				node = node.parent;
 			}
 		}
 			
 		//two red nodes in a row?
 		if(node.LChild != null && node.LChild.LChild != null) {
 			if(node.LChild.isRed && node.LChild.LChild.isRed) {
-				//REWRITE ROTATE RIGHT
-				rotateRight(node.LChild, node);
-
-				//This line breaking after rotation!!!
+				rotateRight(node, node.LChild);
+				System.out.println("Two red nodes in a row Fixed:");
 				this.printRedBlackTree(this.root, "", true);
+				System.out.println("node IS " + node.key);
+				node = node.parent;
 			}
 		}
 		
@@ -160,6 +168,8 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 				node.RChild.flipColor();
 				System.out.println("Two red children of Black parent Fixed:");
 				this.printRedBlackTree(this.root, "", true);
+				System.out.println("node IS " + node.key);
+
 			}
 		}
 		
@@ -170,32 +180,29 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			this.printRedBlackTree(this.root, "", true);
 		}
 		
+		System.out.println("+++++++++++++++++++++++++++++++");
 		
-		if(node.parent != null) {
-			System.out.println("Recursing and looking at node: " + node.parent.key);
-			balance(node.parent);
-		}*/
+		if(node.parent != null) fix(node.parent);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void rotateLeft(Node parent, Node child) {
 	    Node temp = child.LChild;
-	    child.LChild = parent;
-	    parent.RChild = temp;
+	    child.LChild = parent; // make the right child of child to be the parent
+	    parent.RChild = temp; // make the left child parent be the stored right child of child
 
-	    if (temp != null) {
-	        temp.parent = parent;
-	    }
+	    // If stored right child of the child is not null, update its parent
+	    if (temp != null) temp.parent = parent;
 
+	    // make the parent of the child the parent of the parent
 	    child.parent = parent.parent;
 
-	    if (parent.parent == null) {
-	        root = child;
-	    } else if (parent == parent.parent.LChild) {
-	        parent.parent.LChild = child;
-	    } else {
-	        parent.parent.RChild = child;
-	    }
+	    // make the parent of parent the child node
+	    if (parent.parent == null) root = child;
+	    // If the parent is a left child
+	    else if (parent == parent.parent.LChild) parent.parent.LChild = child;
+	    // If the parent is a right child
+	    else parent.parent.RChild = child;
 
 	    parent.parent = child;
 	}
@@ -203,6 +210,8 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	
 	@SuppressWarnings("unchecked")
 	private void rotateRight(Node parent, Node child) {
+		parent.isRed = true;
+		child.isRed = false;
 	    Node temp = child.RChild;
 	    child.RChild = parent; // make the right child of child to be the parent
 	    parent.LChild = temp; // make the left child parent be the stored right child of child
@@ -214,32 +223,13 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	    child.parent = parent.parent;
 
 	    // make the parent of parent to be the child node
-	    if (parent.parent == null) {
-	        // If parent was root, make child the root
-	        root = child;
-	    }
-	    else if (parent == parent.parent.LChild) { // If the parent is a left child
-	        parent.parent.LChild = child;
-	    } 
-	    else { // If the parent is a right child
-	        parent.parent.RChild = child;
-	    }
+	    if (parent.parent == null) root = child;
+	    // If the parent is a left child
+	    else if (parent == parent.parent.LChild) parent.parent.LChild = child; 
+	    // If the parent is a right child
+	    else parent.parent.RChild = child;
 	    
 	    parent.parent = child; //make parent's parent, child
-	}
-
-
-	
-	@SuppressWarnings("unchecked")
-	private void swapData(Node x, Node y) {
-		K tempK = (K) x.key;
-		V tempV = (V) x.value;
-		
-		x.key = y.key;
-		x.value = y.value;
-		
-		y.key = tempK;
-		y.value = tempV;
 	}
 	
 	private void printRedBlackTree(Node node, String prefix, boolean isTail) {
@@ -255,13 +245,7 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 	        if(node.parent != null) relations += "P=" + node.parent.key;
 	        else relations += "P=N";
 	        
-	        if(node.LChild != null) relations += " LC=" + node.LChild.key;
-	        else relations += " LC=N";
-	        
-	        if(node.RChild != null) relations += " RC=" + node.RChild.key;
-	        else relations += " RC=N";
-	        
-	        relations = "";
+	        //relations = "";
 	        
 	        System.out.println(prefix + nodeType + node.key + childLabel + " (" + (node.isRed ? "Red" : "Black") + ") " + relations);
 	        printRedBlackTree(node.LChild, prefix + childPrefix, false);
@@ -280,7 +264,6 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		private Node RChild;
 		private Node LChild;
 		private Node parent;
-		private Node temp;
 		
 		public Node(K key, V value){
 			this.key = key;
@@ -288,7 +271,6 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 			this.isRed = true;
 			this.size = 1;
 			this.RChild = null;
-			this.temp = null;
 			this.LChild = null;
 			this.parent = null;		
 		}
@@ -300,19 +282,6 @@ public class RedBlackTree <K extends Comparable<K>, V> {
 		@SuppressWarnings("unchecked")
 		public void flipColor() {
 			this.isRed = !this.isRed;
-		}
-		
-		@SuppressWarnings("unchecked")
-		public Node copy() {
-			Node newNode = new Node(this.key, this.value);
-			newNode.isRed = this.isRed;
-			newNode.size = this.size;
-			newNode.RChild = this.RChild;
-			newNode.LChild = this.LChild;
-			newNode.temp = this.temp;
-			newNode.parent = this.parent;
-			
-			return newNode;
 		}
 	}
 }
