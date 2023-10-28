@@ -26,7 +26,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
 
         System.out.println("Adding: 6");
         tree.put(6, "f");
-        tree.printRedBlackTree(tree.root, "", false);
         System.out.println("------------------------------");
     }
 
@@ -37,72 +36,79 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     public void put(K key, V value) {
-        if (root == null) {
-            Node newNode = new Node(key, value);
-            root = newNode;
-            root.isRed = false;
-            printRedBlackTree(this.root, "", true);
-        } else {
-            Node newNode = findAndAdd(root, key, value);
-            if (newNode != null && newNode.isRed) {
-                newNode.isRed = false;
-                System.out.println("Root color switched");
-                printRedBlackTree(this.root, "", true);
-            }
+    	Node newNode;
+        if(this.root == null) {
+        	newNode = new Node(key, value);
+        	newNode.isRed = false;
+        	this.root = newNode;
         }
+        else {
+        	newNode = new Node(key, value);
+        	newNode = findAndAdd(this.root, newNode);
+        }
+        fix(this.root);
+        this.printRedBlackTree(this.root, "", false);
     }
 
-    private Node findAndAdd(Node currentNode, K key, V value) {
-    	 Node newNode;
-
-	    //continue down tree to the left
-	    if (key.compareTo(currentNode.key) < 0) {
-	        if (currentNode.LChild != null) {
-	            newNode = findAndAdd(currentNode.LChild, key, value);
-	        } else {
-	            newNode = new Node(key, value);
-	            currentNode.LChild = newNode;
-	            fix(newNode); // Call fix on the new node
-	        }
-	    }
-	    //continue down tree to the right
-	    else if (key.compareTo(currentNode.key) > 0) {
-	        if (currentNode.RChild != null) {
-	            newNode = findAndAdd(currentNode.RChild, key, value);
-	        } else {
-	            newNode = new Node(key, value);
-	            currentNode.RChild = newNode;
-	            fix(newNode); // Call fix on the new node
-	        }
-	    }
-	    //replace value and continue up the tree
-	    else {
-	        currentNode.value = value;
-	        newNode = currentNode;
-	    }
-
-	    System.out.println("currentNode: " + currentNode.key);
-	    fix(currentNode);
-	    return newNode;
+    private Node findAndAdd(Node currentNode, Node newNode) {
+    	//look to left
+    	if(currentNode.key.compareTo(newNode.key) < 0) {
+    		//place node
+    		if(currentNode.LChild == null) {
+    			currentNode.LChild = newNode;
+    			return fix(newNode);
+    		}
+    		//recurse down
+    		else {
+    			newNode = findAndAdd(currentNode.LChild, newNode);
+    			return fix(currentNode.LChild);
+    		}
+    	}
+    	//look to right
+    	else if(currentNode.key.compareTo(newNode.key) > 0) {
+    		//place node
+    		if(currentNode.RChild == null) {
+    			currentNode.RChild = newNode;
+    			return fix(newNode);
+    		}
+    		//recurse down
+    		else {
+    			newNode = findAndAdd(currentNode.RChild, newNode);
+    			return fix(currentNode.RChild);
+    		}
+    	}
+    	//replace value
+    	else {
+    		currentNode.value = newNode.value;
+    		return currentNode;
+    	}
     }
 
-    private void fix(Node node) {
+    private Node fix(Node node) {
         //System.out.println("Node is " + node.key);
         if (node.RChild != null && node.RChild.isRed && !node.isRed) {
-            node = rotateLeft(node);
             System.out.println("Checking " + node.key + "...\nBlack Parent with red right child fixed:");
+            node = rotateLeft(node);
             printRedBlackTree(this.root, "", true);
+            System.out.println("");
         }
         if (node.LChild != null && node.LChild.LChild != null && node.LChild.isRed && node.LChild.LChild.isRed) {
-            node = rotateRight(node);
             System.out.println("Checking " + node.key + "...\nTwo red nodes in a row Fixed:");
+        	node = rotateRight(node);
             printRedBlackTree(this.root, "", true);
+            System.out.println("");
         }
         if (node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed && !node.isRed) {
-            flipColors(node);
             System.out.println("Checking " + node.key + "...\nTwo red children of Black parent Fixed:");
+        	flipColors(node);
             printRedBlackTree(this.root, "", true);
+            System.out.println("");
         }
+        if(this.root.isRed) {
+        	this.root.isRed = false;
+        }
+        
+        return node;
     }
 
     private Node rotateLeft(Node parent) {
@@ -111,6 +117,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         child.LChild = parent;
         child.isRed = parent.isRed;
         parent.isRed = true;
+        if(parent == this.root) {
+        	this.root = child;
+        	this.root.isRed = false;
+        }
         return child;
     }
 
@@ -120,6 +130,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         child.RChild = parent;
         child.isRed = parent.isRed;
         parent.isRed = true;
+        if(parent == this.root) {
+        	this.root = child;
+        	this.root.isRed = false;
+        }
         return child;
     }
 
