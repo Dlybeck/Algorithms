@@ -39,6 +39,9 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         System.out.println("Adding: 6");
         tree.put(6, "f");
         System.out.println("------------------------------");
+        
+        tree.delete(5);
+        System.out.println(tree.toString());
 
     }
 
@@ -61,6 +64,73 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
         fix(this.root);
         System.out.println((this.treeToString(this.root, "", false)));
+    }
+    
+    public V delete(K key) {
+    	V value = findAndDelete(this.root, key).value ;
+    	System.out.println(value);
+    	return value;
+    }
+    
+    private Node findAndDelete(Node currentNode, K key) {
+    	//no children
+    	if(currentNode.RChild == null && currentNode.LChild == null) {
+    		//key not there
+    		if(currentNode.key.compareTo(key) == 0) {
+    			return currentNode;
+    			//Fix tree?
+    		}
+    		else {
+    			return null;
+    		}
+    	}
+    	
+
+    	//One left child
+    	if(currentNode.RChild == null && currentNode.LChild != null) {
+        	//Node matches
+        	if(currentNode.key.compareTo(key) == 0) {
+        		return currentNode.LChild;
+        	}
+        	else { //Continue
+        		return findAndDelete(currentNode.LChild, key);
+        	}
+    	}
+    	//One right child
+    	else if(currentNode.LChild == null && currentNode.RChild != null) {
+    		//Node matches
+        	if(currentNode.key.compareTo(key) == 0) {
+        		return currentNode.LChild;
+        	}
+        	else { //Continue
+        		return findAndDelete(currentNode.RChild, key);
+        	}
+    	}
+    	
+    	//if node has 2 black children
+    	if(!currentNode.LChild.isRed && !currentNode.RChild.isRed) {
+    		
+    	}
+    	
+    }
+    
+    private Node
+    
+    private Node nextDelete(Node currentNode, K key) {
+    	System.out.println("looking at " + currentNode.key);
+    	
+    	//Look left
+    	if(key.compareTo(currentNode.key) > 0) {
+    		return findAndDelete(currentNode.RChild, key);
+    	}
+    	//Look Right
+    	else if(key.compareTo(currentNode.key) < 0) {
+    		return findAndDelete(currentNode.LChild, key);
+    	}
+    	//Return value
+    	else {
+    		return currentNode;
+    	}
     }
 
     private Node findAndAdd(Node currentNode, Node newNode) {
