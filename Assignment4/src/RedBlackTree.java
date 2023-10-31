@@ -7,6 +7,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         System.out.println("Adding: 4");
         tree.put(4, "d");
         System.out.println("------------------------------");
+        
+        System.out.println("Adding: 8");
+        tree.put(8, "h");
+        System.out.println("------------------------------");
 
         System.out.println("Adding: 2");
         tree.put(2, "b");
@@ -19,14 +23,23 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         System.out.println("Adding: 5");
         tree.put(5, "e");
         System.out.println("------------------------------");
+        
+        System.out.println("Adding: 9");
+        tree.put(9, "i");
+        System.out.println("------------------------------");
 
         System.out.println("Adding: 1");
         tree.put(1, "a");
+        System.out.println("------------------------------");
+        
+        System.out.println("Adding: 7");
+        tree.put(7, "g");
         System.out.println("------------------------------");
 
         System.out.println("Adding: 6");
         tree.put(6, "f");
         System.out.println("------------------------------");
+
     }
 
     private Node root;
@@ -47,12 +60,12 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         	newNode = findAndAdd(this.root, newNode);
         }
         fix(this.root);
-        this.printRedBlackTree(this.root, "", false);
+        System.out.println((this.treeToString(this.root, "", false)));
     }
 
     private Node findAndAdd(Node currentNode, Node newNode) {
     	//look to left
-    	if(currentNode.key.compareTo(newNode.key) < 0) {
+    	if(currentNode.key.compareTo(newNode.key) > 0) {
     		//place node
     		if(currentNode.LChild == null) {
     			currentNode.LChild = newNode;
@@ -65,10 +78,11 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		}
     	}
     	//look to right
-    	else if(currentNode.key.compareTo(newNode.key) > 0) {
+    	else if(currentNode.key.compareTo(newNode.key) < 0) {
     		//place node
     		if(currentNode.RChild == null) {
     			currentNode.RChild = newNode;
+    	        System.out.println((this.treeToString(this.root, "", false)));
     			return fix(newNode);
     		}
     		//recurse down
@@ -85,25 +99,29 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     private Node fix(Node node) {
-        //System.out.println("Node is " + node.key);
-        if (node.RChild != null && node.RChild.isRed && !node.isRed) {
+    	//Red Right Child?
+        if (node.RChild != null && node.RChild.isRed) {
             System.out.println("Checking " + node.key + "...\nBlack Parent with red right child fixed:");
             node = rotateLeft(node);
-            printRedBlackTree(this.root, "", true);
+            System.out.println((this.treeToString(this.root, "", false)));
             System.out.println("");
         }
+        //Two red nodes in a row?
+        System.out.println("Checking for double red at " + node.key);
         if (node.LChild != null && node.LChild.LChild != null && node.LChild.isRed && node.LChild.LChild.isRed) {
             System.out.println("Checking " + node.key + "...\nTwo red nodes in a row Fixed:");
         	node = rotateRight(node);
-            printRedBlackTree(this.root, "", true);
+            System.out.println((this.treeToString(this.root, "", false)));
             System.out.println("");
         }
+        //Two red Children
         if (node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed && !node.isRed) {
             System.out.println("Checking " + node.key + "...\nTwo red children of Black parent Fixed:");
         	flipColors(node);
-            printRedBlackTree(this.root, "", true);
+            System.out.println((this.treeToString(this.root, "", false)));
             System.out.println("");
         }
+        //Red Root
         if(this.root.isRed) {
         	this.root.isRed = false;
         }
@@ -112,29 +130,52 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     private Node rotateLeft(Node parent) {
+    	//System.out.println("Parent is " + parent.key);
         Node child = parent.RChild;
-        parent.RChild = child.LChild;
-        child.LChild = parent;
-        child.isRed = parent.isRed;
-        parent.isRed = true;
-        if(parent == this.root) {
-        	this.root = child;
-        	this.root.isRed = false;
-        }
-        return child;
+    	//System.out.println("Child is " + child.key);
+    	swapData(parent, child);
+    	
+    	parent.RChild = child.RChild;
+    	
+    	child.RChild = child.LChild;
+    	child.LChild = parent.LChild;
+    	parent.LChild = child;
+    	
+    	return parent;
+    	
     }
 
     private Node rotateRight(Node parent) {
+    	//System.out.println("Parent is " + parent.key);
         Node child = parent.LChild;
-        parent.LChild = child.RChild;
-        child.RChild = parent;
-        child.isRed = parent.isRed;
-        parent.isRed = true;
-        if(parent == this.root) {
-        	this.root = child;
-        	this.root.isRed = false;
-        }
-        return child;
+    	//System.out.println("Child is " + child.key);
+    	swapData(parent, child);
+    	
+    	parent.LChild = child.LChild;
+    	
+    	child.LChild = child.RChild;
+    	child.RChild = parent.RChild;
+    	parent.RChild = child;
+    	
+    	return parent;
+    }
+    
+    private void swapData(Node x, Node y) {
+    	K k = x.key;
+    	V v  = x.value;
+    	
+    	x.key = y.key;
+    	x.value = y.value;
+    	
+    	y.key = k;
+    	y.value = v;
+    }
+    
+    private void swapChildren(Node parent) {
+    	Node temp = parent.RChild;
+    	
+    	parent.RChild = parent.LChild;
+    	parent.LChild = temp;
     }
 
     private void flipColors(Node node) {
@@ -142,25 +183,36 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         node.LChild.isRed = !node.LChild.isRed;
         node.RChild.isRed = !node.RChild.isRed;
     }
+    
 
-    private void printRedBlackTree(Node node, String prefix, boolean isTail) {
-        if (node != null) {
-            String childLabel = "";
-            String childPrefix = isTail ? "    " : "│   ";
-            String nodeType = isTail ? "└── " : "├── ";
-            if (node.LChild != null) {
-                childLabel = "L";
-            } else if (node.RChild != null) {
-                childLabel = "R";
-            }
-
-            String relations = "";
-
-            System.out.println(prefix + nodeType + node.key + childLabel + " (" + (node.isRed ? "Red" : "Black") + ") " + relations);
-            printRedBlackTree(node.LChild, prefix + childPrefix, false);
-            printRedBlackTree(node.RChild, prefix + childPrefix, true);
-        }
+    public String toString() {
+        return treeToString(this.root, "", true);
     }
+
+    private String treeToString(Node node, String prefix, boolean isTail) {
+        if (node == null) {
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(prefix);
+        builder.append(isTail ? "└── " : "├── ");
+        builder.append(node.key + (node.isRed ? "(R)" : ""));
+        builder.append("\n");
+
+        String childPrefix = prefix + (isTail ? "    " : "│   ");
+        String leftTree = treeToString(node.LChild, childPrefix, node.RChild == null);
+        String rightTree = treeToString(node.RChild, childPrefix, true);
+
+        builder.append(leftTree);
+        builder.append(rightTree);
+
+        return builder.toString();
+    }
+
+
+
+
 
     private class Node {
         private K key;
