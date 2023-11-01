@@ -130,7 +130,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     private Node findAndDelete(Node currentNode, K key) {
     	//no children
     	if(currentNode.RChild == null && currentNode.LChild == null) {
-    		System.out.println("No Children");
     		//key not there
     		if(currentNode.key.compareTo(key) == 0) {
     			return fix(currentNode);
@@ -147,8 +146,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         	//Node matches
         	if(currentNode.key.compareTo(key) == 0) {
         		swapData(currentNode, currentNode.LChild);
-        		System.out.println("Returning " + currentNode.LChild.value);
-        		return fix(currentNode.LChild);
+        		Node node = currentNode.LChild;
+        		node.key = null;
+        		currentNode.LChild = null;
+        		return fix(node);
         	}
         	else { //Continue
         		Node node = findAndDelete(currentNode.LChild, key);
@@ -156,19 +157,19 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         			node.key = null;
             		currentNode.LChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
         	}
     	}
     	//One right child
     	else if(currentNode.LChild == null && currentNode.RChild != null) {
-    		//System.out.println("One Right child");
-
     		//Node matches
         	if(currentNode.key.compareTo(key) == 0) {
         		swapData(currentNode, currentNode.RChild);
-        		System.out.println("Returning " + currentNode.RChild.value);
-        		return fix(currentNode.RChild);
+        		Node node = currentNode.RChild;
+        		node.key = null;
+        		currentNode.RChild = null;
+        		return fix(node);
         	}
         	else { //Continue
         		Node node = findAndDelete(currentNode.RChild, key);
@@ -176,14 +177,13 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         			node.key = null;
             		currentNode.RChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
         	}
     	}
     	
     	//if node has 2 black children
     	if(!currentNode.LChild.isRed && !currentNode.RChild.isRed) {
-    		//System.out.println("Two Black Children");
     		flipColors(currentNode);
     		if(currentNode.key.compareTo(key) == 0) {
     			swapData(currentNode, currentNode.RChild);//Swap node down until it can be deleted as a leaf
@@ -192,8 +192,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         			node.key = null;
             		currentNode.RChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
     		}
     		else {
     			if(currentNode.key.compareTo(key) > 0) {
@@ -202,9 +202,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             			node.key = null;
                 		currentNode.LChild = null;
             		}
-            		System.out.println("Returning " + node.value);
-
-            		return fix(node);
+            		fix(currentNode);
+            		return node;
         		}
     			else if(currentNode.key.compareTo(key) < 0) {
     				Node node = findAndDelete(currentNode.RChild, key);
@@ -212,8 +211,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             			node.key = null;
                 		currentNode.RChild = null;
             		}
-            		System.out.println("Returning " + node.value);
-            		return fix(node);
+            		fix(currentNode);
+            		return node;
         		}	
     		}
     	}
@@ -227,8 +226,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         			node.key = null;
             		currentNode.LChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
     		}
     		//need to go right
     		else if(currentNode.key.compareTo(key) < 0) {
@@ -238,19 +237,20 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         			node.key = null;
         			currentNode.RChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
     		}	
     		//this is the node
     		else {
     			swapData(currentNode, currentNode.RChild); //Swap node down until it can be deleted as a leaf
     			Node node = findAndDelete(currentNode.RChild, key);
+
         		if(node.key != null) {
         			node.key = null;
         			currentNode.RChild = null;
         		}
-        		System.out.println("Returning " + node.value);
-        		return fix(node);
+        		fix(currentNode);
+        		return node;
     		}
     	}
     	
@@ -280,9 +280,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             //System.out.println("");
         }
         //Two red Children
-        System.out.println("Two Red Children?? at " + node.value);
         if (node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed && !node.isRed) {
-            System.out.println("Checking " + node.key + "...\nTwo red children of Black parent Fixed:");
+            //System.out.println("Checking " + node.key + "...\nTwo red children of Black parent Fixed:");
         	flipColors(node);
             //System.out.println((this.treeToString(this.root, "", false)));
             //System.out.println("");
