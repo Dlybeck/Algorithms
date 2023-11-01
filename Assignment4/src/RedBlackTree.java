@@ -67,13 +67,13 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         tree.put(10, 10);
         System.out.println("------------------------------");
         
-        /*System.out.println("Removing: 8");
+        System.out.println("Removing: 8");
         tree.delete(8);
         System.out.println("------------------------------");
         
         System.out.println("Removing: 4");
         tree.delete(4);
-        System.out.println("------------------------------");*/
+        System.out.println("------------------------------");
 
 
 
@@ -183,12 +183,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     			Random rand = new Random();
     			int num = rand.nextInt(2);
     			if(num == 0) {
-    				swapData(currentNode, findPredecessorNode(currentNode)); //swap with predecessor
-    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
+    				//Swap with predecessor
     			}
     			else if(num == 1) {
-    				swapData(currentNode, findSuccessorNode(currentNode)); //swap with predecessor
-    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
+    				//swap with successor
     			}
     			else {
     				System.out.println("Random Num is wrong");
@@ -224,12 +222,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     			Random rand = new Random();
     			int num = rand.nextInt(2);
     			if(num == 0) {
-    				swapData(currentNode, findPredecessorNode(currentNode)); //swap with predecessor
-    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
+    				//swap with predecessor
     			}
     			else if(num == 1) {
-    				swapData(currentNode, findSuccessorNode(currentNode)); //swap with predecessor
-    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
+    				//swap with successor
     			}
     			else {
     				System.out.println("Random Num is wrong");
