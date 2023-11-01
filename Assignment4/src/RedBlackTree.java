@@ -130,30 +130,27 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     private Node findAndDelete(Node currentNode, K key) {
     	//no children
     	if(currentNode.RChild == null && currentNode.LChild == null) {
-    		//key not there
     		if(currentNode.key.compareTo(key) == 0) {
-    			return fix(currentNode);
-    			//Fix tree?
+    			return fix(currentNode); //This is it!
     		}
     		else {
-    			return null;
+    			return null; //Not in Tree
     		}
     	}
     
     	//One left child
     	if(currentNode.RChild == null && currentNode.LChild != null) {
-    		//System.out.println("One left child");
-        	//Node matches
+    		//This is the Node
         	if(currentNode.key.compareTo(key) == 0) {
-        		swapData(currentNode, currentNode.LChild);
+        		swapData(currentNode, currentNode.LChild); //swap to leaf
         		Node node = currentNode.LChild;
-        		node.key = null;
+        		node.key = null; //remove key so next recursion knows not to remove child
         		currentNode.LChild = null;
-        		return fix(node);
+        		return fix(node); //this is it!
         	}
         	else { //Continue
         		Node node = findAndDelete(currentNode.LChild, key);
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
             		currentNode.LChild = null;
         		}
@@ -165,15 +162,15 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	else if(currentNode.LChild == null && currentNode.RChild != null) {
     		//Node matches
         	if(currentNode.key.compareTo(key) == 0) {
-        		swapData(currentNode, currentNode.RChild);
+        		swapData(currentNode, currentNode.RChild); //swap to leaf
         		Node node = currentNode.RChild;
-        		node.key = null;
+        		node.key = null; //remove key so next recursion knows not to remove child
         		currentNode.RChild = null;
-        		return fix(node);
+        		return fix(node); //this is it!
         	}
         	else { //Continue
         		Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
             		currentNode.RChild = null;
         		}
@@ -186,9 +183,9 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	if(!currentNode.LChild.isRed && !currentNode.RChild.isRed) {
     		flipColors(currentNode);
     		if(currentNode.key.compareTo(key) == 0) {
-    			swapData(currentNode, currentNode.RChild);//Swap node down until it can be deleted as a leaf
+    			swapData(currentNode, currentNode.RChild); //Swap node down until it can be deleted as a leaf
     			Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
             		currentNode.RChild = null;
         		}
@@ -198,7 +195,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		else {
     			if(currentNode.key.compareTo(key) > 0) {
     				Node node = findAndDelete(currentNode.LChild, key);
-            		if(node.key != null) {
+            		if(node.key != null) { //if key still exists remove it and make child null
             			node.key = null;
                 		currentNode.LChild = null;
             		}
@@ -207,7 +204,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         		}
     			else if(currentNode.key.compareTo(key) < 0) {
     				Node node = findAndDelete(currentNode.RChild, key);
-            		if(node.key != null) {
+            		if(node.key != null) { //if key still exists remove it and make child null
             			node.key = null;
                 		currentNode.RChild = null;
             		}
@@ -222,7 +219,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		//need to go left
     		if(currentNode.key.compareTo(key) > 0) {
     			Node node = findAndDelete(currentNode.LChild, key);
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
             		currentNode.LChild = null;
         		}
@@ -233,7 +230,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		else if(currentNode.key.compareTo(key) < 0) {
     			rotateRight(currentNode);
     			Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
         			currentNode.RChild = null;
         		}
@@ -245,7 +242,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     			swapData(currentNode, currentNode.RChild); //Swap node down until it can be deleted as a leaf
     			Node node = findAndDelete(currentNode.RChild, key);
 
-        		if(node.key != null) {
+        		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
         			currentNode.RChild = null;
         		}
@@ -257,7 +254,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	System.out.println("Something went wrong at " + currentNode.key);
         System.out.println((this.treeToString(this.root, "", false)));
     	return null;
-    	
     }
     
 
