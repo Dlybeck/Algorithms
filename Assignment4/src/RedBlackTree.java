@@ -3,8 +3,31 @@ import java.util.*;
 public class RedBlackTree<K extends Comparable<K>, V> {
     public static void main(String[] args) {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
+        
+        Random rand = new Random();
+        int num;
+        int[] nums = new int[15];
+        for(int i = 0; i < 15; i++) {
+        	num = rand.nextInt(100);
+        	nums[i] = num;
+        	System.out.println("Adding: " + num);
+        	tree.put(num, num);
+            System.out.println("------------------------------");
+        }
+        
+        System.out.println(Arrays.toString(nums));
+        System.out.println("------------------------------");
 
-        System.out.println("Adding: 4");
+        
+        for(int i = 0; i < 3; i++) {
+        	int index = rand.nextInt(15);
+        	System.out.println("Removing: " + nums[index]);
+        	tree.delete(nums[index]);
+            System.out.println("------------------------------");
+
+        }
+
+        /*System.out.println("Adding: 4");
         tree.put(4, 4);
         System.out.println("------------------------------");
         
@@ -50,7 +73,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         
         System.out.println("Removing: 4");
         tree.delete(4);
-        System.out.println("------------------------------");
+        System.out.println("------------------------------");*/
 
 
 
@@ -128,6 +151,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
     
     private Node findAndDelete(Node currentNode, K key) {
+    	if(currentNode == null) return null;
     	//no children
     	if(currentNode.RChild == null && currentNode.LChild == null) {
     		if(currentNode.key.compareTo(key) == 0) {
@@ -148,8 +172,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         		currentNode.LChild = null;
         		return fix(node); //this is it!
         	}
-        	else { //Continue
+        	else if (currentNode.RChild != null && currentNode.RChild == null){ //Continue
         		Node node = findAndDelete(currentNode.LChild, key);
+        		System.out.println("Current Node is: " +currentNode.value);
+        		System.out.println("Node is: " +currentNode.value);
         		if(node.key != null) { //if key still exists remove it and make child null
         			node.key = null;
             		currentNode.LChild = null;
@@ -195,6 +221,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		else {
     			if(currentNode.key.compareTo(key) > 0) {
     				Node node = findAndDelete(currentNode.LChild, key);
+        			System.out.println("Current Node is: " +currentNode.value);
+            		System.out.println("Node is: " +currentNode.value);
             		if(node.key != null) { //if key still exists remove it and make child null
             			node.key = null;
                 		currentNode.LChild = null;
@@ -215,7 +243,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	}
     	
     	//If node has left red child, and right black child
-    	if(currentNode.LChild.isRed && !currentNode.RChild.isRed) {
+    	if((currentNode.RChild != null && currentNode.LChild != null) && (currentNode.LChild.isRed && !currentNode.RChild.isRed)) {
     		//need to go left
     		if(currentNode.key.compareTo(key) > 0) {
     			Node node = findAndDelete(currentNode.LChild, key);
