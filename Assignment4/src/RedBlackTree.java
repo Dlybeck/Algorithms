@@ -242,6 +242,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     		}
     	}
     	
+    	
+    	//First part not supposed to be there???
     	//If node has left red child, and right black child
     	if((currentNode.RChild != null && currentNode.LChild != null) && (currentNode.LChild.isRed && !currentNode.RChild.isRed)) {
     		//need to go left
