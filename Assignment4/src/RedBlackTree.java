@@ -138,16 +138,18 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     
     public V delete(K key) {
     	if(this.root == null) return null;
+    	V value = this.root.value;
     	this.root.isRed = true;
-    	Node node = findAndDelete(this.root, key);
-    	if(node != null) {
-	    	V value = node.value;
-	    	this.root.isRed = false;
-	        System.out.println((this.treeToString(this.root, "", false)));
-	    	return value;
+    	this.root = findAndDelete(this.root, key);
+    	if(this.root != null) {
+    		this.root.isRed = false;
+    		System.out.println((this.treeToString(this.root, "", false)));
+    		return this.root.value;
     	}
-    	this.root.isRed = false;
-    	return null;
+    	else {
+    		System.out.println((this.treeToString(this.root, "", false)));
+    		return value;
+    	}
     }
     
     private Node findAndDelete(Node currentNode, K key) {
@@ -155,53 +157,22 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	//no children
     	if(currentNode.RChild == null && currentNode.LChild == null) {
     		if(currentNode.key.compareTo(key) == 0) {
-    			return fix(currentNode); //This is it!
+    			return null; //This is it! remove from tree
+    			//How do I know what the deleted node is?
     		}
     		else {
-    			return null; //Not in Tree
+    			return fix(currentNode); //Not in Tree, save it as we recurse back up
     		}
     	}
     
-    	//One left child
+    	//One left child (one right child never happens)
     	if(currentNode.RChild == null && currentNode.LChild != null) {
     		//This is the Node
         	if(currentNode.key.compareTo(key) == 0) {
-        		swapData(currentNode, currentNode.LChild); //swap to leaf
-        		Node node = currentNode.LChild;
-        		node.key = null; //remove key so next recursion knows not to remove child
-        		currentNode.LChild = null;
-        		return fix(node); //this is it!
+        		return currentNode.LChild; //Return child to not have to worry about pointers (forget current node)
         	}
-        	else if (currentNode.RChild != null && currentNode.RChild == null){ //Continue
-        		Node node = findAndDelete(currentNode.LChild, key);
-        		System.out.println("Current Node is: " +currentNode.value);
-        		System.out.println("Node is: " +currentNode.value);
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-            		currentNode.LChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
-        	}
-    	}
-    	//One right child
-    	else if(currentNode.LChild == null && currentNode.RChild != null) {
-    		//Node matches
-        	if(currentNode.key.compareTo(key) == 0) {
-        		swapData(currentNode, currentNode.RChild); //swap to leaf
-        		Node node = currentNode.RChild;
-        		node.key = null; //remove key so next recursion knows not to remove child
-        		currentNode.RChild = null;
-        		return fix(node); //this is it!
-        	}
-        	else { //Continue
-        		Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-            		currentNode.RChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
+        	else{ //Continue
+        		currentNode.LChild = findAndDelete(currentNode.LChild, key);
         	}
     	}
     	
@@ -209,75 +180,60 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	if(!currentNode.LChild.isRed && !currentNode.RChild.isRed) {
     		flipColors(currentNode);
     		if(currentNode.key.compareTo(key) == 0) {
-    			swapData(currentNode, currentNode.RChild); //Swap node down until it can be deleted as a leaf
-    			Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-            		currentNode.RChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
+    			Random rand = new Random();
+    			int num = rand.nextInt(2);
+    			if(num == 0) {
+    				swapData(currentNode, findPredecessorNode(currentNode)); //swap with predecessor
+    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
+    			}
+    			else if(num == 1) {
+    				swapData(currentNode, findSuccessorNode(currentNode)); //swap with predecessor
+    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
+    			}
+    			else {
+    				System.out.println("Random Num is wrong");
+    			}
     		}
     		else {
-    			if(currentNode.key.compareTo(key) > 0) {
-    				Node node = findAndDelete(currentNode.LChild, key);
-        			System.out.println("Current Node is: " +currentNode.value);
-            		System.out.println("Node is: " +currentNode.value);
-            		if(node.key != null) { //if key still exists remove it and make child null
-            			node.key = null;
-                		currentNode.LChild = null;
-            		}
-            		fix(currentNode);
-            		return node;
+    			//continue right
+    			if(key.compareTo(currentNode.key) > 0) {
+    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
         		}
-    			else if(currentNode.key.compareTo(key) < 0) {
-    				Node node = findAndDelete(currentNode.RChild, key);
-            		if(node.key != null) { //if key still exists remove it and make child null
-            			node.key = null;
-                		currentNode.RChild = null;
-            		}
-            		fix(currentNode);
-            		return node;
+    			//continue left
+    			else if(key.compareTo(currentNode.key) < 0) {
+    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
         		}	
     		}
     	}
     	
-    	
-    	//First part not supposed to be there???
     	//If node has left red child, and right black child
-    	if((currentNode.RChild != null && currentNode.LChild != null) && (currentNode.LChild.isRed && !currentNode.RChild.isRed)) {
+    	if(currentNode.LChild.isRed && !currentNode.RChild.isRed) {
     		//need to go left
-    		if(currentNode.key.compareTo(key) > 0) {
-    			Node node = findAndDelete(currentNode.LChild, key);
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-            		currentNode.LChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
+    		if(key.compareTo(currentNode.key) < 0) {
+    			currentNode.LChild = findAndDelete(currentNode.LChild, key);
     		}
     		//need to go right
-    		else if(currentNode.key.compareTo(key) < 0) {
-    			rotateRight(currentNode);
-    			Node node = findAndDelete(currentNode.RChild, key);
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-        			currentNode.RChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
+    		else if(key.compareTo(currentNode.key) > 0) {
+    			System.out.println("currentNode is " + currentNode.value);
+    			currentNode = rotateRight(currentNode);
+    			System.out.println("currentNode is " + currentNode.value);
+    			currentNode.RChild = findAndDelete(currentNode.RChild, key);
     		}	
     		//this is the node
     		else {
-    			swapData(currentNode, currentNode.RChild); //Swap node down until it can be deleted as a leaf
-    			Node node = findAndDelete(currentNode.RChild, key);
-
-        		if(node.key != null) { //if key still exists remove it and make child null
-        			node.key = null;
-        			currentNode.RChild = null;
-        		}
-        		fix(currentNode);
-        		return node;
+    			Random rand = new Random();
+    			int num = rand.nextInt(2);
+    			if(num == 0) {
+    				swapData(currentNode, findPredecessorNode(currentNode)); //swap with predecessor
+    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
+    			}
+    			else if(num == 1) {
+    				swapData(currentNode, findSuccessorNode(currentNode)); //swap with predecessor
+    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
+    			}
+    			else {
+    				System.out.println("Random Num is wrong");
+    			}
     		}
     	}
     	
@@ -319,6 +275,69 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         
         return node;
     }
+    
+    public K findSuccessor(K key){
+    	Node node = this.root;
+    	//find matching node
+    	while(node!=null && key.compareTo(node.key) != 0) {
+    		//look right
+    		if(key.compareTo(node.key) > 0) node = node.RChild;
+    		//look left
+    		else node = node.LChild; //look left
+    	}
+    	//key not in tree
+    	if(node == null) return null;
+    	
+    	//node found, now find successor
+    	if(node.RChild == null) return null; //no successor
+    	node = node.RChild; //move right once
+    	
+    	while(node.LChild != null) node = node.LChild; //find leftmost child
+    	
+    	return node.key;
+    }
+    
+    public K findPredecessor(K key) {
+    	Node node = this.root;
+    	//find matching node
+    	while(node!=null && key.compareTo(node.key) != 0) {
+    		//look right
+    		if(key.compareTo(node.key) > 0) node = node.RChild;
+    		//look left
+    		else node = node.LChild;
+    	}
+    	//key not in tree
+    	if(node == null) return null;
+    	
+    	//node found, now find predecessor
+    	if(node.LChild == null) return null; //no predecessor
+    	node = node.LChild; //move left once
+    	
+    	while(node.RChild != null) node = node.RChild; //find rightmost child
+    	
+    	return node.key;
+    }
+    
+    public Node findSuccessorNode(Node node){
+    	//node found, now find successor
+    	if(node.RChild == null) return null; //no successor
+    	node = node.RChild; //move right once
+    	
+    	while(node.LChild != null) node = node.LChild; //find leftmost child
+    	
+    	return node;
+    }
+    
+    public Node findPredecessorNode(Node node) {
+    	//node found, now find predecessor
+    	if(node.LChild == null) return null; //no predecessor
+    	node = node.LChild; //move left once
+    	
+    	while(node.RChild != null) node = node.RChild; //find rightmost child
+    	
+    	return node;
+    }
+    	
 
     private Node rotateLeft(Node parent) {
     	//System.out.println("Parent is " + parent.key);
