@@ -4,7 +4,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     public static void main(String[] args) {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
         
-        Random rand = new Random();
+        /*Random rand = new Random();
         int num;
         int[] nums = new int[15];
         for(int i = 0; i < 15; i++) {
@@ -25,9 +25,9 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         	tree.delete(nums[index]);
             System.out.println("------------------------------");
 
-        }
+        }*/
 
-        /*System.out.println("Adding: 4");
+        System.out.println("Adding: 4");
         tree.put(4, 4);
         System.out.println("------------------------------");
         
@@ -67,7 +67,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         tree.put(10, 10);
         System.out.println("------------------------------");
         
-        System.out.println("Removing: 8");
+        /*System.out.println("Removing: 8");
         tree.delete(8);
         System.out.println("------------------------------");
         
@@ -278,31 +278,46 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     
     public K findSuccessor(K key){
     	Node node = this.root;
+    	Node pred = null;
     	//find matching node
     	while(node!=null && key.compareTo(node.key) != 0) {
     		//look right
     		if(key.compareTo(node.key) > 0) node = node.RChild;
     		//look left
-    		else node = node.LChild; //look left
+    		else {
+    			pred = node;
+    			node = node.LChild; //look left
+    		}
     	}
     	//key not in tree
     	if(node == null) return null;
     	
     	//node found, now find successor
-    	if(node.RChild == null) return null; //no successor
-    	node = node.RChild; //move right once
-    	
-    	while(node.LChild != null) node = node.LChild; //find leftmost child
-    	
-    	return node.key;
+    	//successor is in node later in tree
+    	if(node.RChild != null) {
+	    	node = node.RChild; //move right once
+	    	while(node.LChild != null) node = node.LChild; //find leftmost child
+	    	return node.key;
+    	}
+    	//successor is earlier in tree
+    	else {
+    		if(pred == null) return null;
+    		else {
+    			return pred.key;
+    		}
+    	}
     }
     
     public K findPredecessor(K key) {
     	Node node = this.root;
+    	Node pred = null;
     	//find matching node
     	while(node!=null && key.compareTo(node.key) != 0) {
     		//look right
-    		if(key.compareTo(node.key) > 0) node = node.RChild;
+    		if(key.compareTo(node.key) > 0) {
+    			pred = node;
+    			node = node.RChild;
+    		}
     		//look left
     		else node = node.LChild;
     	}
@@ -310,32 +325,19 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	if(node == null) return null;
     	
     	//node found, now find predecessor
-    	if(node.LChild == null) return null; //no predecessor
-    	node = node.LChild; //move left once
-    	
-    	while(node.RChild != null) node = node.RChild; //find rightmost child
-    	
-    	return node.key;
-    }
-    
-    public Node findSuccessorNode(Node node){
-    	//node found, now find successor
-    	if(node.RChild == null) return null; //no successor
-    	node = node.RChild; //move right once
-    	
-    	while(node.LChild != null) node = node.LChild; //find leftmost child
-    	
-    	return node;
-    }
-    
-    public Node findPredecessorNode(Node node) {
-    	//node found, now find predecessor
-    	if(node.LChild == null) return null; //no predecessor
-    	node = node.LChild; //move left once
-    	
-    	while(node.RChild != null) node = node.RChild; //find rightmost child
-    	
-    	return node;
+    	//predecessor is after node in tree
+    	if(node.LChild != null) {
+	    	node = node.LChild; //move left once
+	    	while(node.RChild != null) node = node.RChild; //find rightmost child
+	    	return node.key;
+    	}
+    	//predecessor is before node in tree
+    	else {
+    		if(pred == null) return null;
+    		else {
+    			return pred.key;
+    		}
+    	}
     }
     	
 
