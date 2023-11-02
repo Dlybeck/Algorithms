@@ -154,6 +154,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     
     private Node findAndDelete(Node currentNode, K key) {
     	if(currentNode == null) return null;
+    	System.out.println("currentNode is "+ currentNode.key);
     	//no children
     	if(currentNode.RChild == null && currentNode.LChild == null) {
     		if(currentNode.key.compareTo(key) == 0) {
@@ -183,10 +184,16 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     			Random rand = new Random();
     			int num = rand.nextInt(2);
     			if(num == 0) {
-    				//Swap with predecessor
+    				//swap with predecessor
+    				Node pred = findPredecessorNode(currentNode.key);
+    				swapData(currentNode, pred);
+    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
     			}
     			else if(num == 1) {
     				//swap with successor
+    				Node succ = findSuccessorNode(currentNode.key);
+    				swapData(currentNode, succ);
+    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
     			}
     			else {
     				System.out.println("Random Num is wrong");
@@ -223,9 +230,15 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     			int num = rand.nextInt(2);
     			if(num == 0) {
     				//swap with predecessor
+    				Node pred = findPredecessorNode(currentNode.key);
+    				swapData(currentNode, pred);
+    				currentNode.RChild = findAndDelete(currentNode.RChild, key);
     			}
     			else if(num == 1) {
     				//swap with successor
+    				Node succ = findSuccessorNode(currentNode.key);
+    				swapData(currentNode, succ);
+    				currentNode.LChild = findAndDelete(currentNode.LChild, key);
     			}
     			else {
     				System.out.println("Random Num is wrong");
@@ -272,7 +285,19 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         return node;
     }
     
-    public K findSuccessor(K key){
+    public K findSuccessor(K key) {
+    	Node node = findSuccessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+    public K findPredecessor(K key) {
+    	Node node = findPredecessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+    private Node findSuccessorNode(K key){
     	Node node = this.root;
     	Node pred = null;
     	//find matching node
@@ -293,18 +318,18 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	if(node.RChild != null) {
 	    	node = node.RChild; //move right once
 	    	while(node.LChild != null) node = node.LChild; //find leftmost child
-	    	return node.key;
+	    	return node;
     	}
     	//successor is earlier in tree
     	else {
     		if(pred == null) return null;
     		else {
-    			return pred.key;
+    			return pred;
     		}
     	}
     }
     
-    public K findPredecessor(K key) {
+    private Node findPredecessorNode(K key) {
     	Node node = this.root;
     	Node pred = null;
     	//find matching node
@@ -325,13 +350,13 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	if(node.LChild != null) {
 	    	node = node.LChild; //move left once
 	    	while(node.RChild != null) node = node.RChild; //find rightmost child
-	    	return node.key;
+	    	return node;
     	}
     	//predecessor is before node in tree
     	else {
     		if(pred == null) return null;
     		else {
-    			return pred.key;
+    			return pred;
     		}
     	}
     }
