@@ -3,10 +3,9 @@ import java.util.*;
 public class RedBlackTree<K extends Comparable<K>, V> {
     public static void main(String[] args) {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        
         Random rand = new Random();
         int num;
-        int size = 10;
+        int size = 20;
         int[] nums = new int[size];
         for(int i = 0; i < size; i++) {
         	num = rand.nextInt(100);
@@ -190,8 +189,11 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	}
     	
     	//if node has 2 black children
-    	else if(!currentNode.LChild.isRed && !currentNode.RChild.isRed) {
-    		flipColors(currentNode);
+    	else if((currentNode.LChild != null && currentNode.RChild != null) && !currentNode.LChild.isRed && !currentNode.RChild.isRed) {
+    		if(currentNode.isRed) {
+	    		flipColors(currentNode);
+    		}
+
     		if(currentNode.key.compareTo(key) == 0) {
     			Random rand = new Random();
     			int num = rand.nextInt(2);
@@ -199,16 +201,16 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     				//swap with predecessor
     				Node pred = findPredecessorNode(currentNode.key);
     				swapData(currentNode, pred);
-    				System.out.println("Swapping nodes " + currentNode.key + " and " + pred.key);
-    		        System.out.println((this.treeToString(this.root, "", false)));
+    				//System.out.println("Swapping nodes " + currentNode.key + " and " + pred.key);
+    		        //System.out.println((this.treeToString(this.root, "", false)));
     				currentNode.LChild = findAndDelete(currentNode.LChild, key, theValue);
     			}
     			else if(num == 1) {
     				//swap with successor
     				Node succ = findSuccessorNode(currentNode.key);
     				swapData(currentNode, succ);
-    				System.out.println("Swapping nodes " + currentNode.key + " and " + succ.key);
-    		        System.out.println((this.treeToString(this.root, "", false)));
+    				//System.out.println("Swapping nodes " + currentNode.key + " and " + succ.key);
+    		        //System.out.println((this.treeToString(this.root, "", false)));
     				currentNode.RChild = findAndDelete(currentNode.RChild, key, theValue);
     			}
     			else {
@@ -228,17 +230,16 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	}
     	
     	//If node has left red child, and right black child
-    	else if(currentNode.LChild.isRed && !currentNode.RChild.isRed) {
+    	else if((currentNode.LChild != null && currentNode.RChild != null) && currentNode.LChild.isRed && !currentNode.RChild.isRed) {
     		//need to go left
     		if(key.compareTo(currentNode.key) < 0) {
     			currentNode.LChild = findAndDelete(currentNode.LChild, key, theValue);
     		}
     		//need to go right
     		else if(key.compareTo(currentNode.key) > 0) {
-    			System.out.println("currentNode is " + currentNode.value);
+    			//System.out.println("currentNode is " + currentNode.value);
     			currentNode = rotateRight(currentNode);
     			fix(currentNode); //attempt at fixing edge case
-    			System.out.println("currentNode is " + currentNode.value);
     			currentNode.RChild = findAndDelete(currentNode.RChild, key, theValue);
     		}	
     		//this is the node
@@ -249,16 +250,16 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     				//swap with predecessor
     				Node pred = findPredecessorNode(currentNode.key);
     				swapData(currentNode, pred);
-    				System.out.println("Swapping nodes " + currentNode.key + " and " + pred.key);
-    		        System.out.println((this.treeToString(this.root, "", false)));
+    				//System.out.println("Swapping nodes " + currentNode.key + " and " + pred.key);
+    		        //System.out.println((this.treeToString(this.root, "", false)));
     				currentNode.LChild = findAndDelete(currentNode.LChild, key, theValue);
     			}
     			else if(num == 1) {
     				//swap with successor
     				Node succ = findSuccessorNode(currentNode.key);
     				swapData(currentNode, succ);
-    				System.out.println("Swapping nodes " + currentNode.key + " and " + succ.key);
-    		        System.out.println((this.treeToString(this.root, "", false)));
+    				//System.out.println("Swapping nodes " + currentNode.key + " and " + succ.key);
+    		        //System.out.println((this.treeToString(this.root, "", false)));
     				currentNode.RChild = findAndDelete(currentNode.RChild, key, theValue);
     			}
     			else {
@@ -290,7 +291,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             //System.out.println("");
         }
         //Two red Children
-        if (node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed && !node.isRed) {
+        if (node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed) {
             //System.out.println("Checking " + node.key + "...\nTwo red children of Black parent Fixed:");
         	flipColors(node);
             //System.out.println((this.treeToString(this.root, "", false)));
@@ -300,8 +301,12 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         if(this.root.isRed) {
         	this.root.isRed = false;
         }
-        
-        return node;
+        System.out.println(this.treeToString(this.root, "", false));
+        assert(!(node.RChild != null && node.RChild.isRed));
+        assert(!(node.LChild != null && node.LChild.LChild != null && node.LChild.isRed && node.LChild.LChild.isRed));
+        assert(!(node.LChild != null && node.RChild != null && node.RChild.isRed && node.LChild.isRed && !node.isRed));
+        assert(!(node.RChild != null && node.LChild == null));
+       return node;
     }
     
     public K findSuccessor(K key) {
@@ -394,7 +399,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     	parent.LChild = child;
     	
     	return parent;
-    	
     }
 
     private Node rotateRight(Node parent) {
