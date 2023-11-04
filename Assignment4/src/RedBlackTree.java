@@ -313,13 +313,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             System.out.println((this.treeToString(this.root, "", false)));
             System.out.println("");
         }
-        if(isRed(node.RChild) && isRed(node.RChild.LChild)) {
-        	System.out.println("Fixing " + node.key + "...\nRed Right child and red right->left child fixed:");
-        	node.RChild = rotateRight(node.RChild);
-        	node = rotateLeft(node);
-        	System.out.println((this.treeToString(this.root, "", false)));
-            System.out.println("");
-        }
         //Two red Children
         if (isRed(node.RChild) && isRed(node.LChild)) {
             System.out.println("Fixing " + node.key + "...\nTwo red children of Black parent Fixed:");
@@ -452,7 +445,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     private void flipColors(Node node) {
-    	if(node.RChild.isRed == node.LChild.isRed && node.isRed != node.RChild.isRed) {
+    	if(isRed(node.RChild) == isRed(node.LChild) && isRed(node) != isRed(node.RChild)) {
 	        node.isRed = !node.isRed;
 	        node.LChild.isRed = !node.LChild.isRed;
 	        node.RChild.isRed = !node.RChild.isRed;
