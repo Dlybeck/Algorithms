@@ -1,9 +1,9 @@
 import java.util.*;
 
-public class RedBlackTree<K extends Comparable<K>, V> {
+public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     public static void main(String[] args) {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        Random rand = new Random();
+        /*Random rand = new Random();
         int num;
         int size = 10;
         int[] nums = new int[size];
@@ -21,21 +21,21 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         System.out.println("------------------------------");
 
         
-        /*for(int i = 0; i < size; i++) {
+        for(int i = 0; i < size; i++) {
         	int index = rand.nextInt(size);
         	System.out.println("Removing: " + nums[index]);
         	System.out.println(tree.delete(nums[index]));
             System.out.println("------------------------------");
-        }*/
+        }
         
         for(int i = 0; i < size; i++) {
         	System.out.println("Removing: " + nums[i]);
         	System.out.println(tree.delete(nums[i]));
             System.out.println("------------------------------");
 
-        }
+        }*/
 
-        /*System.out.println("Adding: 13");
+        System.out.println("Adding: 13");
         tree.put(13, 13);
         System.out.println("------------------------------");
         
@@ -77,9 +77,12 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         System.out.println("------------------------------\n");
         System.out.println("------------------------------");
         
+
         
         
-        System.out.println("Removing: 13");
+        
+        
+        /*System.out.println("Removing: 13");
     	System.out.println(tree.delete(13));
         System.out.println("------------------------------");
         
@@ -344,6 +347,75 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         
        return node;
     }
+    
+    public boolean containsKey(K key) {
+    	Node node = this.root;
+    	while(true) {
+    		if(node == null) return false; //there is no node
+    		if(node.key.compareTo(key) == 0) return true; //this is the node
+    		
+    		if(key.compareTo(node.key) < 0) node = node.LChild; //go left
+    		else node = node.RChild; //go right
+    	}
+    }
+    
+    public boolean containsValue(V value) {
+        return containsValue(this.root, value);
+    }
+
+    private boolean containsValue(Node node, V value) {
+        if (node == null) return false; //not in tree
+
+        if (node.value.equals(value)) return true; //in tree
+
+        //check left and right trees
+        return containsValue(node.LChild, value) || containsValue(node.RChild, value);
+    }
+    
+    public boolean isEmpty() {
+    	return this.root == null;
+    }
+    
+    public int size() {
+    	
+    }
+    
+    public K reverseLookup(V value) {
+    	
+    }
+    
+    public K findFirstKey() {
+    	
+    }
+    
+    public K findLastKey() {
+    	
+    }
+    
+    public K getRootKey() {
+    	
+    }
+    
+    public int findRank(K key) {
+    	
+    }
+    
+    public K select (int rank) {
+    	
+    }
+    
+    public int countRedNodes() {
+    	
+    }
+    
+    public int calcHeight() {
+    	
+    }
+    
+    public double calcAverageDepth() {
+    	
+    }
+
     
     public K findSuccessor(K key) {
     	Node node = findSuccessorNode(key);
