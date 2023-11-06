@@ -34,6 +34,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
             System.out.println("------------------------------");
 
         }*/
+        
 
         System.out.println("Adding: 13");
         tree.put(13, 13);
@@ -76,6 +77,9 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         System.out.println("------------------------------\n");
         System.out.println("------------------------------\n");
         System.out.println("------------------------------");
+        
+        System.out.println(tree.calcBlackHeight());
+        
         
 
         
@@ -381,19 +385,46 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
     
     public K reverseLookup(V value) {
-    	
+        return reverseLookup(root, value);
+    }
+
+    private K reverseLookup(Node node, V value) {
+        if (node == null) return null; // Not found
+
+        if (node.value.equals(value)) return node.key; // Found a node with the given value
+
+        K leftResult = reverseLookup(node.LChild, value);
+        if (leftResult != null) return leftResult; // Found in the left subtree
+
+        K rightResult = reverseLookup(node.RChild, value);
+        if (rightResult != null) return rightResult; // Found in the right subtree
+
+        return null; // Not found in the current subtree
     }
     
     public K findFirstKey() {
+    	if(this.root == null) return null;
     	
+    	Node node = this.root;
+    	
+    	while(node.LChild != null) node = node.LChild;
+    	
+    	return node.key;
     }
     
     public K findLastKey() {
+    	if(this.root == null) return null;
     	
+    	Node node = this.root;
+    	
+    	while(node.RChild != null) node = node.RChild;
+    	
+    	return node.key;
     }
     
     public K getRootKey() {
-    	
+    	if(this.root == null) return null;
+    	return this.root.key;
     }
     
     public int findRank(K key) {
@@ -405,15 +436,71 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
     
     public int countRedNodes() {
-    	
+    	if(this.root == null) return 0;
+    	return countRedNodes(this.root, 0);
+    }
+    
+    private int countRedNodes(Node node, int size) {
+        if (isRed(node)) size++; //add to size because red
+        
+        if (node.LChild == null) return size; // Reds from left subtree
+        size = countRedNodes(node.LChild, size);
+
+        if (node.RChild == null) return size; // Reds from right subtree
+        size = countRedNodes(node.RChild, size);
+
+        return size; // Not found in the current subtree
     }
     
     public int calcHeight() {
+    	if(this.root == null) return 0;
     	
+    	return calcHeight(this.root, 0, 0);
+    }
+    
+    public int calcHeight(Node node, int height, int maxHeight) {
+    	height += 1;
+    	if(node != null && height > maxHeight) {
+    		maxHeight = height;
+    	}
+    	
+    	if (node.LChild == null) return maxHeight; // Reds from left subtree
+        maxHeight = calcHeight(node.LChild, height, maxHeight);
+
+        if (node.RChild == null) return maxHeight; // Reds from right subtree
+        maxHeight = calcHeight(node.RChild, height, maxHeight);
+        
+        return maxHeight;
+    }
+    
+    public int calcBlackHeight() {
+    	if(this.root == null) return 0;
+    	
+    	return calcBlackHeight(this.root, 0, 0);
+    }
+    
+    private int calcBlackHeight(Node node, int blackHeight, int maxBlack) {
+    	//is Red and not null
+    	if(node != null && !isRed(node)) blackHeight ++;
+    	if(blackHeight > maxBlack) maxBlack = blackHeight;
+    	
+    	if (node.LChild == null) return maxBlack; // Reds from left subtree
+        maxBlack = calcBlackHeight(node.LChild, blackHeight, maxBlack);
+
+        if (node.RChild == null) return maxBlack; // Reds from right subtree
+        maxBlack = calcBlackHeight(node.RChild, blackHeight, maxBlack);
+        
+        return maxBlack;
     }
     
     public double calcAverageDepth() {
+    	if(this.root == null) return Double.NaN;
     	
+    	return calcAverageDepth(this.root, -1, 0);
+    }
+    
+    private double calcAverageDepth(Node node, int depth, double avgDepth) {
+    	//NEED SIZE
     }
 
     
