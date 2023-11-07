@@ -1,156 +1,6 @@
 import java.util.*;
 
 public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
-    public static void main(String[] args) {
-        RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        Random rand = new Random();
-        int num;
-        int size = 10;
-        int[] nums = new int[size];
-        for(int i = 0; i < size; i++) {
-        	num = rand.nextInt(100);
-        	nums[i] = num;
-        	System.out.println("Adding: " + num);
-        	tree.put(num, num);
-        	System.out.println(tree.treeToString());
-            System.out.println("------------------------------");
-        }
-        
-        
-        System.out.println((tree.treeToString(tree.root, "", false)));
-        System.out.println("------------------------------");
-        
-        System.out.println(tree.treeToString());
-    
-        
-       /*for(int i = 0; i < size; i++) {
-        	System.out.println("Removing: " + nums[i]);
-        	tree.delete(nums[i]);
-        	System.out.println(tree.treeToString());
-            System.out.println("------------------------------");
-        }
-        System.out.println("All Removed:");
-        System.out.println(tree.treeToString());*/
-        
-        System.out.println("Select rank 3");
-        System.out.println(tree.select(3));
-        
-        Arrays.sort(nums);
-        
-        System.out.println("Should be: " + nums[3]);
-        
-
-        /*System.out.println("Adding: 13");
-        tree.put(13, 13);
-        System.out.println("------------------------------");
-        
-        System.out.println("Adding: 93");
-        tree.put(93, 93);
-        System.out.println("------------------------------");
-
-        System.out.println("Adding: 14");
-        tree.put(14, 14);
-        System.out.println("------------------------------");
-
-        System.out.println("Adding: 93");
-        tree.put(93, 93);
-        System.out.println("------------------------------");
-
-        System.out.println("Adding: 99");
-        tree.put(99, 99);
-        System.out.println("------------------------------");
-        
-        System.out.println("Adding: 72");
-        tree.put(72, 72);
-        System.out.println("------------------------------");
-
-        System.out.println("Adding: 95");
-        tree.put(95, 95);
-        System.out.println("------------------------------");
-        
-        System.out.println("Adding: 28");
-        tree.put(28, 28);
-        System.out.println("------------------------------");
-
-        System.out.println("Adding: 74");
-        tree.put(74, 74);
-        System.out.println("------------------------------");
-        
-        System.out.println("Adding: 8");
-        tree.put(8, 8);
-        System.out.println("------------------------------\n");
-        System.out.println("------------------------------\n");
-        System.out.println("------------------------------");        
-        
-        
-        
-        System.out.println("Removing: 13");
-    	System.out.println(tree.delete(13));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 93");
-    	System.out.println(tree.delete(93));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 14");
-    	System.out.println(tree.delete(14));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 93");
-    	System.out.println(tree.delete(93));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 99");
-    	System.out.println(tree.delete(99));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 72");
-    	System.out.println(tree.delete(72));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 95");
-    	System.out.println(tree.delete(95));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 28");
-    	System.out.println(tree.delete(28));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 74");
-    	System.out.println(tree.delete(74));
-        System.out.println("------------------------------");
-        
-        System.out.println("Removing: 8");
-    	System.out.println(tree.delete(8));
-        System.out.println("------------------------------");*/
-    }
-    
-    private static int findIndex(int arr[], int t) { 
-  
-        // if array is Null 
-        if (arr == null) { 
-            return -1; 
-        } 
-  
-        // find length of array 
-        int len = arr.length; 
-        int i = 0; 
-  
-        // traverse in the array 
-        while (i < len) { 
-  
-            // if the i-th element is t 
-            // then return the index 
-            if (arr[i] == t) { 
-                return i; 
-            } 
-            else { 
-                i = i + 1; 
-            } 
-        } 
-        return -1; 
-    } 
-
     private Node root;
 
     public RedBlackTree() {
@@ -161,6 +11,157 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	Node newNode = new Node(key, value);
     	this.root = findAndAdd(this.root, newNode);
         this.root.isRed = false;
+    }
+    
+    public V get(K key) {
+    	if(this.root == null) return null;
+   
+    	Node node = this.root;
+    	
+    	while(node != null) {
+    		if(key.compareTo(node.key) < 0) node = node.LChild; //Go left
+    		else if(key.compareTo(node.key) > 0) node = node.RChild; //Go right
+    		else return node.value;
+    	}
+    	
+    	return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public V delete(K key) {
+    	if(this.root == null) return null;
+    	V root = this.root.value;
+    	this.root.isRed = true;
+    	Object[] theValue = new Object[1];
+    	this.root = findAndDelete(this.root, key, theValue);
+    	if(this.root != null) {
+    		fix(this.root);
+    		this.root.isRed = false;
+    		return (V) theValue[0];
+    	}
+    	else {
+    		return root;
+    	}
+    }
+    
+    public boolean containsKey(K key) {
+    	Node node = this.root;
+    	while(true) {
+    		if(node == null) return false; //there is no node
+    		if(node.key.compareTo(key) == 0) return true; //this is the node
+    		
+    		if(key.compareTo(node.key) < 0) node = node.LChild; //go left
+    		else node = node.RChild; //go right
+    	}
+    }
+    
+    public boolean containsValue(V value) {
+        return containsValue(this.root, value);
+    }
+    
+    public boolean isEmpty() {
+    	return this.root == null;
+    }
+    
+    public int size() {
+    	return this.root.size;
+    }
+    
+    public K reverseLookup(V value) {
+        return reverseLookup(root, value);
+    }
+    
+    public K findFirstKey() {
+    	if(this.root == null) return null;
+    	
+    	Node node = this.root;
+    	
+    	while(node.LChild != null) node = node.LChild;
+    	
+    	return node.key;
+    }
+    
+    public K findLastKey() {
+    	if(this.root == null) return null;
+    	
+    	Node node = this.root;
+    	
+    	while(node.RChild != null) node = node.RChild;
+    	
+    	return node.key;
+    }
+    
+    public K getRootKey() {
+    	if(this.root == null) return null;
+    	return this.root.key;
+    }
+    
+    public K findPredecessor(K key) {
+    	Node node = findPredecessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+    public K findSuccessor(K key) {
+    	Node node = findSuccessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+	public int findRank(K key) {
+    	Node node = this.root;
+    	int rank = 0;
+    	
+    	if(this.root == null) return -1;
+    	
+    	while(node != null) {
+    		if(key.compareTo(node.key) == 0) return rank + size(node.LChild);
+    		else if(key.compareTo(node.key) < 0) node = node.LChild;//go left
+    		else if (key.compareTo(node.key) > 0){ //go right
+    			rank += 1 + size(node.LChild);
+    			node = node.RChild;
+    		}
+    	}
+    	return -1; //node not in tree
+    }
+    
+    public K select (int rank) {
+    	Node node = this.root;
+    	
+    	if(rank < 0 || rank >= size(this.root)) return null; //rank not in range
+    	
+    	 while(node != null) {
+    		 if(rank < size(node.LChild)) node = node.LChild;
+    		 else if(rank == size(node.LChild)) return node.key;
+    		 else if(rank > size(node.LChild)) {
+    			 rank -= size(node.LChild) + 1;
+    			 node = node.RChild;
+    		 }
+    	 }
+    	 return null;
+    }
+    
+    public int countRedNodes() {
+    	if(this.root == null) return 0;
+    	return countRedNodes(this.root, 0);
+    }
+    
+    public int calcHeight() {
+    	if(this.root == null) return 0;
+    	
+    	return calcHeight(this.root, 0, 0);
+    }
+    
+    public int calcBlackHeight() {
+    	if(this.root == null) return 0;
+    	
+    	return calcBlackHeight(this.root, 0, 0);
+    }
+    
+    public double calcAverageDepth() {
+    	if(this.root == null) return Double.NaN;
+    	
+    	return calcAverageDepth(this.root, 0, 0)/size(this.root);
     }
     
     private Node findAndAdd(Node currentNode, Node newNode) {
@@ -184,24 +185,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	
     	currentNode.size = 1 + size(currentNode.LChild) + size(currentNode.RChild);
     	return fix(currentNode);
-    }
-
-    
-    @SuppressWarnings("unchecked")
-	public V delete(K key) {
-    	if(this.root == null) return null;
-    	V root = this.root.value;
-    	this.root.isRed = true;
-    	Object[] theValue = new Object[1];
-    	this.root = findAndDelete(this.root, key, theValue);
-    	if(this.root != null) {
-    		fix(this.root);
-    		this.root.isRed = false;
-    		return (V) theValue[0];
-    	}
-    	else {
-    		return root;
-    	}
     }
     
     @SuppressWarnings("unused")
@@ -256,9 +239,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     				swapData(currentNode, succ);
     				currentNode.RChild = findAndDelete(currentNode.RChild, key, theValue);
     			}
-    			else {
-    				System.out.println("Random Num is wrong");
-    			}
     		}
     		else {
     			//continue right
@@ -299,18 +279,12 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     				swapData(currentNode, succ);
     				currentNode.RChild = findAndDelete(currentNode.RChild, key, theValue);
     			}
-    			else {
-    				System.out.println("Random Num is wrong");
-    			}
     		}
     	}
     	
     	currentNode.size = 1 + size(currentNode.RChild) + size(currentNode.LChild);
     	return fix(currentNode);
     }
-    
-
-
     
     private Node fix(Node node) {
     	if(node == null) return null;
@@ -350,29 +324,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
 
         
        return node;
-    }
-    
-    public boolean containsKey(K key) {
-    	Node node = this.root;
-    	while(true) {
-    		if(node == null) return false; //there is no node
-    		if(node.key.compareTo(key) == 0) return true; //this is the node
-    		
-    		if(key.compareTo(node.key) < 0) node = node.LChild; //go left
-    		else node = node.RChild; //go right
-    	}
-    }
-    
-    public K findSuccessor(K key) {
-    	Node node = findSuccessorNode(key);
-    	if(node!=null) return node.key;
-    	else return null;
-    }
-    
-    public K findPredecessor(K key) {
-    	Node node = findPredecessorNode(key);
-    	if(node!=null) return node.key;
-    	else return null;
     }
     
     private Node findSuccessorNode(K key){
@@ -492,11 +443,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
 	        node.RChild.isRed = !node.RChild.isRed;
     	}
     }
-    
-    
-    public boolean containsValue(V value) {
-        return containsValue(this.root, value);
-    }
 
     private boolean containsValue(Node node, V value) {
         if (node == null) return false; //not in tree
@@ -505,18 +451,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
 
         //check left and right trees
         return containsValue(node.LChild, value) || containsValue(node.RChild, value);
-    }
-    
-    public boolean isEmpty() {
-    	return this.root == null;
-    }
-    
-    public int size() {
-    	return this.root.size;
-    }
-    
-    public K reverseLookup(V value) {
-        return reverseLookup(root, value);
     }
 
     private K reverseLookup(Node node, V value) {
@@ -533,72 +467,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         return null; // Not found in the current subtree
     }
     
-    public K findFirstKey() {
-    	if(this.root == null) return null;
-    	
-    	Node node = this.root;
-    	
-    	while(node.LChild != null) node = node.LChild;
-    	
-    	return node.key;
-    }
-    
-    public K findLastKey() {
-    	if(this.root == null) return null;
-    	
-    	Node node = this.root;
-    	
-    	while(node.RChild != null) node = node.RChild;
-    	
-    	return node.key;
-    }
-    
-    public K getRootKey() {
-    	if(this.root == null) return null;
-    	return this.root.key;
-    }
-    
-    @SuppressWarnings("unused")
-	public int findRank(K key) {
-    	Node node = this.root;
-    	int rank = 0;
-    	
-    	if(this.root == null) return -1;
-    	
-    	while(node != null) {
-    		if(key.compareTo(node.key) == 0) return rank + size(node.LChild);=
-    		else if(key.compareTo(node.key) < 0) node = node.LChild;//go left
-    		else if (key.compareTo(node.key) > 0){ //go right
-    			rank += 1 + size(node.LChild);
-    			node = node.RChild;
-    		}
-    	}
-    	return -1; //node not in tree
-    }
-    
-    
-    
-    public K select (int rank) {
-    	Node node = this.root;
-    	
-    	if(rank < 0 || rank >= size(this.root)) return null; //rank not in range
-    	
-    	 while(node != null) {
-    		 if(rank < size(node.LChild)) node = node.LChild;
-    		 else if(rank == size(node.LChild)) return node.key;
-    		 else if(rank > size(node.LChild)) {
-    			 rank -= size(node.LChild) + 1;
-    			 node = node.RChild;
-    		 }
-    	 }
-    	 return null;
-    }
-    
-    public int countRedNodes() {
-    	if(this.root == null) return 0;
-    	return countRedNodes(this.root, 0);
-    }
-    
     private int countRedNodes(Node node, int size) {
         if (isRed(node)) size++; //add to size because red
         
@@ -609,12 +477,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         size = countRedNodes(node.RChild, size);
 
         return size; // Not found in the current subtree
-    }
-    
-    public int calcHeight() {
-    	if(this.root == null) return 0;
-    	
-    	return calcHeight(this.root, 0, 0);
     }
     
     public int calcHeight(Node node, int height, int maxHeight) {
@@ -632,12 +494,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         return maxHeight;
     }
     
-    public int calcBlackHeight() {
-    	if(this.root == null) return 0;
-    	
-    	return calcBlackHeight(this.root, 0, 0);
-    }
-    
     private int calcBlackHeight(Node node, int blackHeight, int maxBlack) {
     	//is Red and not null
     	if(node != null && !isRed(node)) blackHeight ++;
@@ -652,14 +508,15 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         return maxBlack;
     }
     
-    public double calcAverageDepth() {
-    	if(this.root == null) return Double.NaN;
+	private double calcAverageDepth(Node node, int depth, double sum) {
+    	if(node == null) {
+    		return sum;
+    	}
+		sum += depth;		
+    	sum = calcAverageDepth(node.LChild, depth+1, sum);
+    	sum = calcAverageDepth(node.RChild, depth+1, sum);
     	
-    	return calcAverageDepth(this.root, -1, 0);
-    }
-    
-    private double calcAverageDepth(Node node, int depth, double avgDepth) {
-    	//NEED SIZE
+    	return sum;
     }
     
     
@@ -711,7 +568,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	}
     }
 
-
     private class Node {
         private K key;
         private V value;
@@ -728,5 +584,129 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
             this.LChild = null;
             this.size = 1;
         }
+    }
+    
+    public static void main(String[] args) {
+        RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
+        /*Random rand = new Random();
+        int num;
+        int size = 10;
+        int[] nums = new int[size];
+        for(int i = 0; i < size; i++) {
+        	num = rand.nextInt(100);
+        	nums[i] = num;
+        	System.out.println("Adding: " + num);
+        	tree.put(num, num);
+        	System.out.println(tree.treeToString());
+            System.out.println("------------------------------");
+        }
+        
+        
+        System.out.println((tree.treeToString(tree.root, "", false)));
+        System.out.println("------------------------------");
+        
+        System.out.println(tree.treeToString());
+    
+        
+       for(int i = 0; i < size; i++) {
+        	System.out.println("Removing: " + nums[i]);
+        	tree.delete(nums[i]);
+        	System.out.println(tree.treeToString());
+            System.out.println("------------------------------");
+        }
+        System.out.println("All Removed:");
+        System.out.println(tree.treeToString());
+        
+        System.out.println("Calc Average Dpeth");
+        System.out.println(tree.calcAverageDepth());*/
+        
+
+        System.out.println("Adding: 13");
+        tree.put(13, 13);
+        System.out.println("------------------------------");
+        
+        System.out.println("Adding: 93");
+        tree.put(93, 93);
+        System.out.println("------------------------------");
+
+        System.out.println("Adding: 14");
+        tree.put(14, 14);
+        System.out.println("------------------------------");
+
+        System.out.println("Adding: 93");
+        tree.put(93, 93);
+        System.out.println("------------------------------");
+
+        System.out.println("Adding: 99");
+        tree.put(99, 99);
+        System.out.println("------------------------------");
+        
+        System.out.println("Adding: 72");
+        tree.put(72, 72);
+        System.out.println("------------------------------");
+
+        System.out.println("Adding: 95");
+        tree.put(95, 95);
+        System.out.println("------------------------------");
+        
+        System.out.println("Adding: 28");
+        tree.put(28, 28);
+        System.out.println("------------------------------");
+
+        System.out.println("Adding: 74");
+        tree.put(74, 74);
+        System.out.println("------------------------------");
+        
+        System.out.println("Adding: 8");
+        tree.put(8, 8);
+        System.out.println("------------------------------");      
+
+    
+        System.out.println(tree.treeToString());
+        System.out.println("------------------------------");
+        
+        
+        System.out.println("Removing: 13");
+    	System.out.println(tree.delete(13));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 93");
+    	System.out.println(tree.delete(93));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 14");
+    	System.out.println(tree.delete(14));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 93");
+    	System.out.println(tree.delete(93));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 99");
+    	System.out.println(tree.delete(99));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 72");
+    	System.out.println(tree.delete(72));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 95");
+    	System.out.println(tree.delete(95));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 28");
+    	System.out.println(tree.delete(28));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 74");
+    	System.out.println(tree.delete(74));
+        System.out.println("------------------------------");
+        
+        System.out.println("Removing: 8");
+    	System.out.println(tree.delete(8));
+        System.out.println("------------------------------");
+        
+        System.out.println(tree.treeToString());
+
     }
 }
