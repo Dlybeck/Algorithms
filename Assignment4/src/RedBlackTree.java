@@ -3,16 +3,16 @@ import java.util.*;
 public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     public static void main(String[] args) {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        /*Random rand = new Random();
+        Random rand = new Random();
         int num;
-        int size = 10;
+        int size = 20;
         int[] nums = new int[size];
         for(int i = 0; i < size; i++) {
         	num = rand.nextInt(100);
         	nums[i] = num;
-        	//System.out.println("Adding: " + num);
+        	System.out.println("Adding: " + num);
         	tree.put(num, num);
-            //System.out.println("------------------------------");
+            System.out.println("------------------------------");
         }
         
         
@@ -21,22 +21,22 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         System.out.println("------------------------------");
 
         
-        for(int i = 0; i < size; i++) {
-        	int index = rand.nextInt(size);
-        	System.out.println("Removing: " + nums[index]);
-        	System.out.println(tree.delete(nums[index]));
-            System.out.println("------------------------------");
-        }
+        //for(int i = 0; i < size; i++) {
+        //	int index = rand.nextInt(size);
+        //	System.out.println("Removing: " + nums[index]);
+        //	System.out.println(tree.delete(nums[index]));
+          //  System.out.println("------------------------------");
+        //}
         
         for(int i = 0; i < size; i++) {
         	System.out.println("Removing: " + nums[i]);
         	System.out.println(tree.delete(nums[i]));
             System.out.println("------------------------------");
 
-        }*/
+        }
         
 
-        System.out.println("Adding: 13");
+        /*System.out.println("Adding: 13");
         tree.put(13, 13);
         System.out.println("------------------------------");
         
@@ -76,17 +76,11 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         tree.put(8, 8);
         System.out.println("------------------------------\n");
         System.out.println("------------------------------\n");
-        System.out.println("------------------------------");
-        
-        System.out.println(tree.calcBlackHeight());
-        
-        
-
+        System.out.println("------------------------------");        
         
         
         
-        
-        /*System.out.println("Removing: 13");
+        System.out.println("Removing: 13");
     	System.out.println(tree.delete(13));
         System.out.println("------------------------------");
         
@@ -144,6 +138,9 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     
     private Node findAndAdd(Node currentNode, Node newNode) {
     	if(currentNode == null) return currentNode = newNode;
+    	
+    	System.out.println("Checking " + currentNode.key);
+    	
     	//look to left
     	if(currentNode.key.compareTo(newNode.key) > 0) {
     		currentNode.LChild = findAndAdd(currentNode.LChild, newNode);
@@ -183,6 +180,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     @SuppressWarnings("unused")
 	private Node findAndDelete(Node currentNode, K key, Object[] theValue) {
     	System.out.println("Checking " + currentNode.key);
+
     	if(currentNode == null) return fix(currentNode);
     	
     	//no children
@@ -190,6 +188,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     		System.out.println("No Children");
     		if(currentNode.key.compareTo(key) == 0){
     			theValue[0] = currentNode.value;
+    			assert(isRed(currentNode));
     			fix(currentNode);
     			return null; //This is it! remove from tree
     		}
@@ -205,6 +204,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     		//This is the Node
         	if(currentNode.key.compareTo(key) == 0){
         		System.out.println("Reutrning Child");
+        		assert(isRed(currentNode));
         		theValue[0] = currentNode.value;
         		return currentNode.LChild; //Return child to not have to worry about pointers (forget current node)
         	}
@@ -212,6 +212,9 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         		currentNode.LChild = findAndDelete(currentNode.LChild, key, theValue);
         	}
     	}
+    	
+    	//edge case
+    	//else if(node)
     	
     	//if node has 2 black children
     	else if(!isRed(currentNode.LChild) && !isRed(currentNode.RChild)){
@@ -315,8 +318,20 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
             System.out.println("");
         }
         
+      //left Red Child With right Red Child
+        if(isRed(node.LChild) && isRed(node.LChild.RChild)) {
+        	node.LChild = rotateLeft(node.LChild);
+        	node = rotateRight(node);
+        }
+        
+      //Right Red Child With left Red Child
+        if(isRed(node.RChild) && isRed(node.RChild.LChild)) {
+        	node.RChild = rotateRight(node.RChild);
+        	node = rotateLeft(node);
+        }
+        
     	//Red Right Child?
-        if (isRed(node.RChild) && !isRed(node.LChild)) {
+        if (isRed(node.RChild)) {
             System.out.println("Fixing " + node.key + "...\nRed right child fixed:");
             node = rotateLeft(node);
             System.out.println((this.treeToString(this.root, "", false)));
@@ -338,12 +353,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
             System.out.println("");
         }
         
-        //left Red Child With right Red Child
-        if(isRed(node.LChild) && isRed(node.LChild.RChild)) {
-        	node.LChild = rotateLeft(node.LChild);
-        	node = rotateRight(node.LChild);
-        }
-        
         if(isRed(this.root)) {
         	this.root.isRed = false;
         }
@@ -362,6 +371,131 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     		else node = node.RChild; //go right
     	}
     }
+    
+    public K findSuccessor(K key) {
+    	Node node = findSuccessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+    public K findPredecessor(K key) {
+    	Node node = findPredecessorNode(key);
+    	if(node!=null) return node.key;
+    	else return null;
+    }
+    
+    private Node findSuccessorNode(K key){
+    	Node node = this.root;
+    	Node pred = null;
+    	//find matching node
+    	while(node!=null && key.compareTo(node.key) != 0) {
+    		//look right
+    		if(key.compareTo(node.key) > 0) node = node.RChild;
+    		//look left
+    		else {
+    			pred = node;
+    			node = node.LChild; //look left
+    		}
+    	}
+    	//key not in tree
+    	if(node == null) return null;
+    	
+    	//node found, now find successor
+    	//successor is in node later in tree
+    	if(node.RChild != null) {
+	    	node = node.RChild; //move right once
+	    	while(node.LChild != null) node = node.LChild; //find leftmost child
+	    	return node;
+    	}
+    	//successor is earlier in tree
+    	else {
+    		if(pred == null) return null;
+    		else {
+    			return pred;
+    		}
+    	}
+    }
+    
+    private Node findPredecessorNode(K key) {
+    	Node node = this.root;
+    	Node pred = null;
+    	//find matching node
+    	while(node!=null && key.compareTo(node.key) != 0) {
+    		//look right
+    		if(key.compareTo(node.key) > 0) {
+    			pred = node;
+    			node = node.RChild;
+    		}
+    		//look left
+    		else node = node.LChild;
+    	}
+    	//key not in tree
+    	if(node == null) return null;
+    	
+    	//node found, now find predecessor
+    	//predecessor is after node in tree
+    	if(node.LChild != null) {
+	    	node = node.LChild; //move left once
+	    	while(node.RChild != null) node = node.RChild; //find rightmost child
+	    	return node;
+    	}
+    	//predecessor is before node in tree
+    	else {
+    		if(pred == null) return null;
+    		else {
+    			return pred;
+    		}
+    	}
+    }
+    	
+
+    private Node rotateLeft(Node parent) {
+    	//System.out.println("Parent is " + parent.key);
+        Node child = parent.RChild;
+    	//System.out.println("Child is " + child.key);
+    	swapData(parent, child);
+    	
+    	parent.RChild = child.RChild;
+    	
+    	child.RChild = child.LChild;
+    	child.LChild = parent.LChild;
+    	parent.LChild = child;
+    	return parent;
+    }
+
+    private Node rotateRight(Node parent) {
+    	//System.out.println("Parent is " + parent.key);
+        Node child = parent.LChild;
+    	//System.out.println("Child is " + child.key);
+    	swapData(parent, child);
+    	
+    	parent.LChild = child.LChild;
+    	
+    	child.LChild = child.RChild;
+    	child.RChild = parent.RChild;
+    	parent.RChild = child;
+    	return parent;
+    }
+    
+    private void swapData(Node x, Node y) {
+    	K k = x.key;
+    	V v  = x.value;
+    	
+    	x.key = y.key;
+    	x.value = y.value;
+    	
+    	y.key = k;
+    	y.value = v;
+    }
+
+    private void flipColors(Node node) {
+    	if(isRed(node.RChild) == isRed(node.LChild) && isRed(node) != isRed(node.LChild)) {
+	        node.isRed = !node.isRed;
+	        node.LChild.isRed = !node.LChild.isRed;
+	        node.RChild.isRed = !node.RChild.isRed;
+    	}
+    }
+    
     
     public boolean containsValue(V value) {
         return containsValue(this.root, value);
@@ -501,137 +635,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     
     private double calcAverageDepth(Node node, int depth, double avgDepth) {
     	//NEED SIZE
-    }
-
-    
-    public K findSuccessor(K key) {
-    	Node node = findSuccessorNode(key);
-    	if(node!=null) return node.key;
-    	else return null;
-    }
-    
-    public K findPredecessor(K key) {
-    	Node node = findPredecessorNode(key);
-    	if(node!=null) return node.key;
-    	else return null;
-    }
-    
-    private Node findSuccessorNode(K key){
-    	Node node = this.root;
-    	Node pred = null;
-    	//find matching node
-    	while(node!=null && key.compareTo(node.key) != 0) {
-    		//look right
-    		if(key.compareTo(node.key) > 0) node = node.RChild;
-    		//look left
-    		else {
-    			pred = node;
-    			node = node.LChild; //look left
-    		}
-    	}
-    	//key not in tree
-    	if(node == null) return null;
-    	
-    	//node found, now find successor
-    	//successor is in node later in tree
-    	if(node.RChild != null) {
-	    	node = node.RChild; //move right once
-	    	while(node.LChild != null) node = node.LChild; //find leftmost child
-	    	return node;
-    	}
-    	//successor is earlier in tree
-    	else {
-    		if(pred == null) return null;
-    		else {
-    			return pred;
-    		}
-    	}
-    }
-    
-    private Node findPredecessorNode(K key) {
-    	Node node = this.root;
-    	Node pred = null;
-    	//find matching node
-    	while(node!=null && key.compareTo(node.key) != 0) {
-    		//look right
-    		if(key.compareTo(node.key) > 0) {
-    			pred = node;
-    			node = node.RChild;
-    		}
-    		//look left
-    		else node = node.LChild;
-    	}
-    	//key not in tree
-    	if(node == null) return null;
-    	
-    	//node found, now find predecessor
-    	//predecessor is after node in tree
-    	if(node.LChild != null) {
-	    	node = node.LChild; //move left once
-	    	while(node.RChild != null) node = node.RChild; //find rightmost child
-	    	return node;
-    	}
-    	//predecessor is before node in tree
-    	else {
-    		if(pred == null) return null;
-    		else {
-    			return pred;
-    		}
-    	}
-    }
-    	
-
-    private Node rotateLeft(Node parent) {
-    	//System.out.println("Parent is " + parent.key);
-        Node child = parent.RChild;
-    	//System.out.println("Child is " + child.key);
-    	swapData(parent, child);
-    	
-    	parent.RChild = child.RChild;
-    	
-    	child.RChild = child.LChild;
-    	child.LChild = parent.LChild;
-    	parent.LChild = child;
-    	return parent;
-    }
-
-    private Node rotateRight(Node parent) {
-    	//System.out.println("Parent is " + parent.key);
-        Node child = parent.LChild;
-    	//System.out.println("Child is " + child.key);
-    	swapData(parent, child);
-    	
-    	parent.LChild = child.LChild;
-    	
-    	child.LChild = child.RChild;
-    	child.RChild = parent.RChild;
-    	parent.RChild = child;
-    	return parent;
-    }
-    
-    private void swapData(Node x, Node y) {
-    	K k = x.key;
-    	V v  = x.value;
-    	
-    	x.key = y.key;
-    	x.value = y.value;
-    	
-    	y.key = k;
-    	y.value = v;
-    }
-
-    private void flipColors(Node node) {
-    	if(isRed(node.RChild) == isRed(node.LChild) && isRed(node) != isRed(node.LChild)) {
-    		if(node.LChild == null) {
-    			node.isRed = !node.isRed;
-    			node.RChild.isRed = node.RChild.isRed;
-    		}
-    		else {
-		        node.isRed = !node.isRed;
-		        node.LChild.isRed = !node.LChild.isRed;
-		        node.RChild.isRed = !node.RChild.isRed;
-    		}
-    	}
     }
     
 
