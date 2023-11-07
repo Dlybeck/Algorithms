@@ -5,14 +5,15 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
         Random rand = new Random();
         int num;
-        int size = 100;
+        int size = 10;
         int[] nums = new int[size];
         for(int i = 0; i < size; i++) {
         	num = rand.nextInt(100);
         	nums[i] = num;
-        	//System.out.println("Adding: " + num);
+        	System.out.println("Adding: " + num);
         	tree.put(num, num);
-            //System.out.println("------------------------------");
+        	System.out.println(tree.toString());
+            System.out.println("------------------------------");
         }
         
         
@@ -140,7 +141,10 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
     
     private Node findAndAdd(Node currentNode, Node newNode) {
-    	if(currentNode == null) return currentNode = newNode;
+    	if(currentNode == null) {
+    		newNode.size = 1;
+    		return currentNode = newNode;
+    	}
     	
     	//System.out.println("Checking " + currentNode.key);
     	
@@ -156,6 +160,8 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	else if(currentNode.key.compareTo(newNode.key) == 0) {
     		currentNode.value = newNode.value;
     	}
+    	
+    	currentNode.size = 1 + size(currentNode.LChild) + size(currentNode.RChild);
     	return fix(currentNode);
     }
 
@@ -454,9 +460,10 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	
 
     private Node rotateLeft(Node parent) {
-    	//System.out.println("Parent is " + parent.key);
+    	System.out.println("Parent size  was " + parent.size);
         Node child = parent.RChild;
-    	//System.out.println("Child is " + child.key);
+    	System.out.println("Child size was" + child.size);
+        
     	swapData(parent, child);
     	
     	parent.RChild = child.RChild;
@@ -464,13 +471,17 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	child.RChild = child.LChild;
     	child.LChild = parent.LChild;
     	parent.LChild = child;
+    	
+    	System.out.println("parent size is " + parent.size);
+    	System.out.println("child size is " + child.size);
     	return parent;
     }
 
     private Node rotateRight(Node parent) {
-    	//System.out.println("Parent is " + parent.key);
+    	System.out.println("Parent is " + parent.key);
         Node child = parent.LChild;
-    	//System.out.println("Child is " + child.key);
+    	System.out.println("Child is " + child.key); 
+        
     	swapData(parent, child);
     	
     	parent.LChild = child.LChild;
@@ -478,6 +489,10 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	child.LChild = child.RChild;
     	child.RChild = parent.RChild;
     	parent.RChild = child;
+    	
+    	System.out.println("parent size is " + parent.size);
+    	System.out.println("child size is " + child.size);
+    	
     	return parent;
     }
     
@@ -641,6 +656,10 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	//NEED SIZE
     }
     
+    
+    private int size(Node node) {
+        return (node != null) ? node.size : 0;
+    }
 
     public String toString() {
         return treeToString(this.root, "", true);
@@ -656,8 +675,8 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         
         if (isTail)builder.append("└── ");
         else builder.append("├── ");
-        if (node.isRed) builder.append(node.key + "(R)");
-        else builder.append(node.key + "");
+        if (node.isRed) builder.append(node.key + "(R) " + node.size);
+        else builder.append(node.key + " " + node.size);
         
         builder.append("\n");
 
