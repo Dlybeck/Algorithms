@@ -12,7 +12,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         	nums[i] = num;
         	System.out.println("Adding: " + num);
         	tree.put(num, num);
-        	System.out.println(tree.toString());
+        	System.out.println(tree.treeToString());
             System.out.println("------------------------------");
         }
         
@@ -21,24 +21,17 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         System.out.println(Arrays.toString(nums));
         System.out.println("------------------------------");
         
-        System.out.println(tree.toString());
-
+        System.out.println(tree.treeToString());
+    
         
-        //for(int i = 0; i < size; i++) {
-        //	int index = rand.nextInt(size);
-        //	System.out.println("Removing: " + nums[index]);
-        //	System.out.println(tree.delete(nums[index]));
-          //  System.out.println("------------------------------");
-        //}
-        
-       for(int i = 0; i < size; i++) {
+       /*for(int i = 0; i < size; i++) {
         	System.out.println("Removing: " + nums[i]);
         	tree.delete(nums[i]);
         	System.out.println(tree.toString());
             System.out.println("------------------------------");
         }
         System.out.println("All Removed:");
-        System.out.println(tree.toString());
+        System.out.println(tree.toString());*/
         
 
         /*System.out.println("Adding: 13");
@@ -125,6 +118,32 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	System.out.println(tree.delete(8));
         System.out.println("------------------------------");*/
     }
+    
+    private static int findIndex(int arr[], int t) { 
+  
+        // if array is Null 
+        if (arr == null) { 
+            return -1; 
+        } 
+  
+        // find length of array 
+        int len = arr.length; 
+        int i = 0; 
+  
+        // traverse in the array 
+        while (i < len) { 
+  
+            // if the i-th element is t 
+            // then return the index 
+            if (arr[i] == t) { 
+                return i; 
+            } 
+            else { 
+                i = i + 1; 
+            } 
+        } 
+        return -1; 
+    } 
 
     private Node root;
 
@@ -487,7 +506,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
     
     public int size() {
-    	
+    	return this.root.size;
     }
     
     public K reverseLookup(V value) {
@@ -533,9 +552,33 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	return this.root.key;
     }
     
-    public int findRank(K key) {
+    @SuppressWarnings("unused")
+	public int findRank(K key) {
+    	Node node = this.root;
+    	int rank = 0;
     	
+    	if(this.root == null) return -1;
+    	
+    	while(node != null) {
+    		System.out.println("Node is " + node.key + ". Rank is " + rank);
+
+    		if(key.compareTo(node.key) == 0) {
+        		return rank + size(node.LChild);
+    		}
+    		else if(key.compareTo(node.key) < 0) {
+    			System.out.println("Go to the left");
+    			node = node.LChild;//go left
+    		}
+    		else if (key.compareTo(node.key) > 0){ //go right
+    			System.out.println("Go to the right");
+    			rank += 1 + size(node.LChild);
+    			node = node.RChild;
+    		}
+    	}
+    	return -1; //node not in tree
     }
+    
+    
     
     public K select (int rank) {
     	
@@ -614,7 +657,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         return (node != null) ? node.size : 0;
     }
 
-    public String toString() {
+    public String treeToString() {
         return treeToString(this.root, "", true);
     }
 
