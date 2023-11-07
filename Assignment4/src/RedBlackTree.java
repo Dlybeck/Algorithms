@@ -1,18 +1,42 @@
 import java.util.*;
 
+/**
+* Red Black Tree Object
+* Self balancing binary tree used to store keys and values
+*
+* @author David Lybeck
+* @version 2023.11.07
+*/
 public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
+	/**
+	 * Root node of Red Black Tree
+	 */
     private Node root;
 
+    /**
+	* Constructor for the RedBlackTree type
+	*/
     public RedBlackTree() {
         this.root = null;
     }
 
+    /**
+     * Adds a node to the RedBlackTree
+     * 
+     * @param key to node to be added
+     * @param value of node to be added
+     */
     public void put(K key, V value) {
     	Node newNode = new Node(key, value);
     	this.root = findAndAdd(this.root, newNode);
         this.root.isRed = false;
     }
     
+    /**
+     * Gets the matching value for a given key
+     * @param key
+     * @return value of node with given key. null if key not found
+     */
     public V get(K key) {
     	if(this.root == null) return null;
    
@@ -23,10 +47,14 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     		else if(key.compareTo(node.key) > 0) node = node.RChild; //Go right
     		else return node.value;
     	}
-    	
     	return null;
     }
     
+    /**
+     * Deletes a node with the given key from the Red Black Tree
+     * @param key
+     * @return value of deleted node, null if key not found
+     */
     @SuppressWarnings("unchecked")
 	public V delete(K key) {
     	if(this.root == null) return null;
@@ -44,70 +72,114 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	}
     }
     
+    /**
+     * Checks to see if a key is contained in the Red Black Tree
+     * @param key key to search for
+     * @return boolean true if key is in Red Black Tree, false otherwise
+     */
     public boolean containsKey(K key) {
     	Node node = this.root;
     	while(true) {
     		if(node == null) return false; //there is no node
     		if(node.key.compareTo(key) == 0) return true; //this is the node
-    		
     		if(key.compareTo(node.key) < 0) node = node.LChild; //go left
     		else node = node.RChild; //go right
     	}
     }
     
+    /**
+     * Checks to see if a value is contained in the Red Black Tree
+     * @param value value to check for in tree
+     * @return boolean true if it is contained in the Red Black Tree, false otherwise
+     */
     public boolean containsValue(V value) {
         return containsValue(this.root, value);
     }
     
+    /**
+     * Checks to see if Red Black Tree is empty
+     * @return boolean true if it is empty, false otherwise
+     */
     public boolean isEmpty() {
     	return this.root == null;
     }
     
+    
+    /**
+     * Finds the number of nodes contained in the Red Black Tree
+     * @return int the size of the Red Black Tree
+     */
     public int size() {
     	return this.root.size;
     }
     
+    /**
+     * Finds the Key for the given value in the Red Black Tree
+     * @param value given value to find matching key
+     * @return K key found in tree. null if key is not found
+     */
     public K reverseLookup(V value) {
         return reverseLookup(root, value);
     }
     
+    /**
+     * Find the key less than all of the others
+     * @return K lowest valued key in the Red Black Tree. null if key is not found
+     */
     public K findFirstKey() {
     	if(this.root == null) return null;
-    	
     	Node node = this.root;
-    	
     	while(node.LChild != null) node = node.LChild;
-    	
     	return node.key;
     }
     
+    /**
+     * Find the greatest key in the Red Black Tree
+     * @return K the highest valued key in the Red Black Tree. null if key is not found
+     */
     public K findLastKey() {
     	if(this.root == null) return null;
-    	
     	Node node = this.root;
-    	
     	while(node.RChild != null) node = node.RChild;
-    	
     	return node.key;
     }
     
+    /**
+     * Finds the key of the root node of the Red Black Tree
+     * @return K the key of the root node in the Red Black Tree. null if key is not found
+     */
     public K getRootKey() {
     	if(this.root == null) return null;
     	return this.root.key;
     }
     
+    /**
+     * Finds the key immediately less than the given key
+     * @param key
+     * @return K key immediately less than given key. null if no predecessor is found
+     */
     public K findPredecessor(K key) {
     	Node node = findPredecessorNode(key);
     	if(node!=null) return node.key;
     	else return null;
     }
     
+    /**
+     * Finds the key immediately greater than the given key
+     * @param key
+     * @return K key immediately greater than given key. null if no successor is found
+     */
     public K findSuccessor(K key) {
     	Node node = findSuccessorNode(key);
     	if(node!=null) return node.key;
     	else return null;
     }
     
+    /**
+     * Finds the rank of the given key
+     * @param key
+     * @return int rank of the key. -1 if no node is found
+     */
 	public int findRank(K key) {
     	Node node = this.root;
     	int rank = 0;
@@ -125,6 +197,11 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	return -1; //node not in tree
     }
     
+	/**
+	 * Finds the key with the given rank
+	 * @param rank
+	 * @return K key with the given rank. null if rank is not found
+	 */
     public K select (int rank) {
     	Node node = this.root;
     	
@@ -141,26 +218,39 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	 return null;
     }
     
+    /**
+     * Counts the number of red nodes
+     * @return int number of red nodes. null if tree is empty
+     */
     public int countRedNodes() {
     	if(this.root == null) return 0;
     	return countRedNodes(this.root, 0);
     }
     
+    /**
+     * Calculates the height of the tree
+     * @return int height of the tree. null if it is empty
+     */
     public int calcHeight() {
     	if(this.root == null) return 0;
-    	
     	return calcHeight(this.root, 0, 0);
     }
     
+    /**
+     * Calculates the height of the black nodes in the tree
+     * @return int height of the black nodes. null if the tree is empty
+     */
     public int calcBlackHeight() {
     	if(this.root == null) return 0;
-    	
     	return calcBlackHeight(this.root, 0, 0);
     }
     
+    /**
+     * Finds the average depth of all nodes in the tree. Root has depth 0
+     * @return double average depth of the tree
+     */
     public double calcAverageDepth() {
     	if(this.root == null) return Double.NaN;
-    	
     	return calcAverageDepth(this.root, 0, 0)/size(this.root);
     }
     
@@ -281,7 +371,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     			}
     		}
     	}
-    	
     	currentNode.size = 1 + size(currentNode.RChild) + size(currentNode.LChild);
     	return fix(currentNode);
     }
@@ -321,8 +410,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         if(isRed(this.root)) {
         	this.root.isRed = false;
         }
-
-        
        return node;
     }
     
@@ -428,10 +515,8 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     private void swapData(Node x, Node y) {
     	K k = x.key;
     	V v  = x.value;
-    	
     	x.key = y.key;
     	x.value = y.value;
-    	
     	y.key = k;
     	y.value = v;
     }
@@ -481,9 +566,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     
     public int calcHeight(Node node, int height, int maxHeight) {
     	height += 1;
-    	if(node != null && height > maxHeight) {
-    		maxHeight = height;
-    	}
+    	if(node != null && height > maxHeight) maxHeight = height;
     	
     	if (node.LChild == null) return maxHeight; // Reds from left subtree
         maxHeight = calcHeight(node.LChild, height, maxHeight);
@@ -509,9 +592,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
     
 	private double calcAverageDepth(Node node, int depth, double sum) {
-    	if(node == null) {
-    		return sum;
-    	}
+    	if(node == null) return sum;
 		sum += depth;		
     	sum = calcAverageDepth(node.LChild, depth+1, sum);
     	sum = calcAverageDepth(node.RChild, depth+1, sum);
@@ -529,9 +610,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     }
 
     private String treeToString(Node node, String prefix, boolean isTail) {
-        if (node == null) {
-            return "";
-        }
+        if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
         builder.append(prefix);
@@ -540,7 +619,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         else builder.append("├── ");
         if (node.isRed) builder.append(node.key + "(R) " + node.size);
         else builder.append(node.key + " " + node.size);
-        
         builder.append("\n");
 
         String childPrefix = prefix + (isTail ? "    " : "│   ");
@@ -554,18 +632,12 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         if (node.RChild == null) builder.append(childPrefix + "└── \n");
         builder.append(rightTree);
 
-
-
         return builder.toString();
     }
     
     private Boolean isRed (Node node) {
-    	if(node == null) {
-    		return false;
-    	}
-    	else {
-    		return node.isRed;
-    	}
+    	if(node == null) return false;
+    	else return node.isRed;
     }
 
     private class Node {
@@ -586,11 +658,15 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         }
     }
     
+    /**
+     * main method
+     * @param args
+     */
     public static void main(String[] args) {
-        RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        /*Random rand = new Random();
+    	RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
+        Random rand = new Random();
         int num;
-        int size = 10;
+        int size = 8;
         int[] nums = new int[size];
         for(int i = 0; i < size; i++) {
         	num = rand.nextInt(100);
@@ -600,13 +676,11 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         	System.out.println(tree.treeToString());
             System.out.println("------------------------------");
         }
-        
-        
-        System.out.println((tree.treeToString(tree.root, "", false)));
+   
         System.out.println("------------------------------");
-        
         System.out.println(tree.treeToString());
-    
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
         
        for(int i = 0; i < size; i++) {
         	System.out.println("Removing: " + nums[i]);
@@ -615,13 +689,9 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
             System.out.println("------------------------------");
         }
         System.out.println("All Removed:");
-        System.out.println(tree.treeToString());
-        
-        System.out.println("Calc Average Dpeth");
-        System.out.println(tree.calcAverageDepth());*/
-        
+        System.out.println(tree.treeToString());   
 
-        System.out.println("Adding: 13");
+        /*System.out.println("Adding: 13");
         tree.put(13, 13);
         System.out.println("------------------------------");
         
@@ -706,7 +776,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	System.out.println(tree.delete(8));
         System.out.println("------------------------------");
         
-        System.out.println(tree.treeToString());
+        System.out.println(tree.treeToString());*/
 
     }
 }
