@@ -18,7 +18,6 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         
         
         System.out.println((tree.treeToString(tree.root, "", false)));
-        System.out.println(Arrays.toString(nums));
         System.out.println("------------------------------");
         
         System.out.println(tree.treeToString());
@@ -27,11 +26,18 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
        /*for(int i = 0; i < size; i++) {
         	System.out.println("Removing: " + nums[i]);
         	tree.delete(nums[i]);
-        	System.out.println(tree.toString());
+        	System.out.println(tree.treeToString());
             System.out.println("------------------------------");
         }
         System.out.println("All Removed:");
-        System.out.println(tree.toString());*/
+        System.out.println(tree.treeToString());*/
+        
+        System.out.println("Select rank 3");
+        System.out.println(tree.select(3));
+        
+        Arrays.sort(nums);
+        
+        System.out.println("Should be: " + nums[3]);
         
 
         /*System.out.println("Adding: 13");
@@ -560,17 +566,9 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	if(this.root == null) return -1;
     	
     	while(node != null) {
-    		System.out.println("Node is " + node.key + ". Rank is " + rank);
-
-    		if(key.compareTo(node.key) == 0) {
-        		return rank + size(node.LChild);
-    		}
-    		else if(key.compareTo(node.key) < 0) {
-    			System.out.println("Go to the left");
-    			node = node.LChild;//go left
-    		}
+    		if(key.compareTo(node.key) == 0) return rank + size(node.LChild);=
+    		else if(key.compareTo(node.key) < 0) node = node.LChild;//go left
     		else if (key.compareTo(node.key) > 0){ //go right
-    			System.out.println("Go to the right");
     			rank += 1 + size(node.LChild);
     			node = node.RChild;
     		}
@@ -581,7 +579,19 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     
     
     public K select (int rank) {
+    	Node node = this.root;
     	
+    	if(rank < 0 || rank >= size(this.root)) return null; //rank not in range
+    	
+    	 while(node != null) {
+    		 if(rank < size(node.LChild)) node = node.LChild;
+    		 else if(rank == size(node.LChild)) return node.key;
+    		 else if(rank > size(node.LChild)) {
+    			 rank -= size(node.LChild) + 1;
+    			 node = node.RChild;
+    		 }
+    	 }
+    	 return null;
     }
     
     public int countRedNodes() {
