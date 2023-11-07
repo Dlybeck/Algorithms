@@ -5,7 +5,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
         Random rand = new Random();
         int num;
-        int size = 10;
+        int size = 20;
         int[] nums = new int[size];
         for(int i = 0; i < size; i++) {
         	num = rand.nextInt(100);
@@ -31,13 +31,13 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
           //  System.out.println("------------------------------");
         //}
         
-        for(int i = 0; i < size; i++) {
+        /*for(int i = 0; i < size; i++) {
         	//System.out.println("Removing: " + nums[i]);
         	tree.delete(nums[i]);
             //System.out.println("------------------------------");
         }
         System.out.println("All Removed:");
-        System.out.println(tree.toString());
+        System.out.println(tree.toString());*/
         
 
         /*System.out.println("Adding: 13");
@@ -460,9 +460,7 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	
 
     private Node rotateLeft(Node parent) {
-    	System.out.println("Parent size  was " + parent.size);
         Node child = parent.RChild;
-    	System.out.println("Child size was" + child.size);
         
     	swapData(parent, child);
     	
@@ -472,15 +470,14 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	child.LChild = parent.LChild;
     	parent.LChild = child;
     	
-    	System.out.println("parent size is " + parent.size);
-    	System.out.println("child size is " + child.size);
+    	if(child.RChild != null) child.RChild.size = 1 + size(child.RChild.LChild) + size(child.RChild.RChild);
+    	child.size = 1 + size(child.LChild) + size(child.RChild);
+    	
     	return parent;
     }
 
     private Node rotateRight(Node parent) {
-    	System.out.println("Parent is " + parent.key);
         Node child = parent.LChild;
-    	System.out.println("Child is " + child.key); 
         
     	swapData(parent, child);
     	
@@ -490,8 +487,8 @@ public class RedBlackTree<K extends Comparable<K>, V extends Comparable<V>> {
     	child.RChild = parent.RChild;
     	parent.RChild = child;
     	
-    	System.out.println("parent size is " + parent.size);
-    	System.out.println("child size is " + child.size);
+    	if(child.LChild != null) child.LChild.size = 1 + size(child.LChild.LChild) + size(child.LChild.RChild);
+    	child.size = 1 + size(child.LChild) + size(child.RChild);
     	
     	return parent;
     }
