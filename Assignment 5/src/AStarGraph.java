@@ -20,27 +20,38 @@ public class AStarGraph {
 	}
 	
 	public void addRoad(String city1Name, String city2Name, double length) {
-		if(!cities.containsKey(city1Name) || !cities.containsKey(city2Name)) throw new IllegalArgumentException("A city does not exist");
+		if(!isValidCity(city1Name) || !isValidCity(city2Name)) throw new IllegalArgumentException("A city does not exist");
 		
 		City city1 = cities.get(city1Name);
 		City city2 = cities.get(city2Name);
 		
-		if(city1.roads.contains(road1) || city2.roads.contains(road2)) throw new IllegalArgumentException("Cities already connected");
 		if(length < findHeuristic(city1, city2)) throw new IllegalArgumentException("Road is too short");
 		
-		Road road1 = new Road(city2Name, length);
-		Road road2 = new Road(city1Name, length);
+		if(!isValidRoad(city1, city2Name) || !isValidRoad(city2, city1Name)) throw new IllegalArgumentException("Cities already connected");
 		
-		city1.roads.add(road1); //add road from city1 to 2
-		city2.roads.add(road2); //add road from city2 to 1
+		
+		city1.roads.put(city2Name, length); //add road from city1 to 2
+		city2.roads.put(city1Name, length); //add road from city2 to 1
 	}
 	
 	public boolean deleteRoad(String city1Name, String city2Name) {
 		City city1 = cities.get(city1Name);
 		City city2 = cities.get(city2Name);
 		
-		//returns true if both removed the road (they should always be together)
-		return (city1.roads.remove(city2) && city2.roads.remove(city1));		
+		//if both cities say the road exists remove them
+		if(isValidRoad(city1, city2Name) && isValidRoad(city2, city1Name)) {
+			city1.roads.remove(city2Name);
+			city2.roads.remove(city1Name);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isValidCity(String city) {
+		return cities.containsKey(city);	
+	}
+	public boolean isValidRoad(City city, String city2) {
+		return city.roads.containsKey(city2);	
 	}
 	
 	private double findHeuristic(City city1, City city2) {
@@ -54,13 +65,13 @@ public class AStarGraph {
 		return (arccos(sin(latA) * sin(latB) + cos(latA) * cos(latB) * cos(lonA-lonB)) * 6317);
 	}
 	private double sin(double num) {
-		Math.sin(num);
+		return Math.sin(num);
 	}
 	private double cos(double num) {
-		Math.cos(num);
+		return Math.cos(num);
 	}
 	private double arccos(double num) {
-		Math.acos(num)
+		return Math.acos(num);
 	}
 	
 	
@@ -70,22 +81,13 @@ public class AStarGraph {
 		private String name;
 		private double lat;
 		private double lon;
-		private HashSet<Road> roads;
+		private HashMap<String, Double> roads;
 		
 		public City(String name, double lat, double lon) {
 			this.name = name;
 			this.lat = lat;
 			this.lon = lon;
-			this.roads = new HashSet<>();
-		}
-	}
-	
-	private class Road{
-		private String destination;
-		private double length;
-		public Road(String destination, double length) {
-			this.destination = destination;
-			this.length = length;
+			this.roads = new HashMap<>();
 		}
 	}
 }
