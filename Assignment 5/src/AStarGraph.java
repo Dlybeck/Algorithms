@@ -50,8 +50,34 @@ public class AStarGraph {
 	public boolean isValidCity(String city) {
 		return cities.containsKey(city);	
 	}
-	public boolean isValidRoad(City city, String city2) {
+	private boolean isValidRoad(City city, String city2) {
 		return city.roads.containsKey(city2);	
+	}
+	
+	public double[] getCityLocation(String cityName) {
+		City city = cities.get(cityName);
+		try {
+			double[] coords = {city.lat, city.lon};
+			return coords;
+		}
+		//if a city is null
+		catch (Exception e){
+			return null;
+		}
+	}
+	
+	public double getRoadLength(String city1Name, String city2Name) {
+		City city = cities.get(city1Name);
+		if(city != null && isValidRoad(city, city2Name)) return city.roads.get(city2Name);
+		//road does not exist
+		return -1;
+	}
+	
+	public String[] getNeighboringCities(String cityName) {
+		City city = cities.get(cityName);
+		String[] neighbors = new String[0];
+		neighbors = city.roads.keySet().toArray(neighbors);
+		return neighbors;
 	}
 	
 	private double findHeuristic(City city1, City city2) {
