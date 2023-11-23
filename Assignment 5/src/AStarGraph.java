@@ -1,7 +1,5 @@
 import java.util.*;
 
-import javax.print.attribute.standard.Destination;
-
 public class AStarGraph {
 
 	public static void main(String[] args) {
@@ -30,8 +28,11 @@ public class AStarGraph {
 		if(!isValidRoad(city1, city2Name) || !isValidRoad(city2, city1Name)) throw new IllegalArgumentException("Cities already connected");
 		
 		
-		city1.roads.put(city2Name, length); //add road from city1 to 2
-		city2.roads.put(city1Name, length); //add road from city2 to 1
+		Road road1 = new Road(city2Name, length);
+		Road road2 = new Road(city1Name, length);
+		
+		city1.roads.add(road1); //add road from city1 to 2
+		city2.roads.add(road2); //add road from city2 to 1
 	}
 	
 	public boolean deleteRoad(String city1Name, String city2Name) {
@@ -40,9 +41,14 @@ public class AStarGraph {
 		
 		//if both cities say the road exists remove them
 		if(isValidRoad(city1, city2Name) && isValidRoad(city2, city1Name)) {
-			city1.roads.remove(city2Name);
-			city2.roads.remove(city1Name);
-			return true;
+			for(int i = 0; i < city1.roads.size(); i++) {
+				if(city1.roads.get(i).dest.compareTo(city2Name) == 0) city1.roads.remove(i);
+				return true;
+			}
+			for(int i = 0; i < city2.roads.size(); i++) {
+				if(city2.roads.get(i).dest.compareTo(city1Name) == 0) city2.roads.remove(i);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -51,7 +57,10 @@ public class AStarGraph {
 		return cities.containsKey(city);	
 	}
 	private boolean isValidRoad(City city, String city2) {
-		return city.roads.containsKey(city2);	
+		for(Road road : city.roads) {
+			if(road.dest.compareTo(city2) == 0) return true;
+		}
+		return false;
 	}
 	
 	public double[] getCityLocation(String cityName) {
@@ -68,16 +77,26 @@ public class AStarGraph {
 	
 	public double getRoadLength(String city1Name, String city2Name) {
 		City city = cities.get(city1Name);
-		if(city != null && isValidRoad(city, city2Name)) return city.roads.get(city2Name);
+		if(city != null && isValidRoad(city, city2Name)) {
+			for(Road road : city.roads) {
+				//this is the road
+				if (road.dest.compareTo(city2Name) == 0) return road.length;
+			}
+		}
 		//road does not exist
 		return -1;
 	}
 	
 	public String[] getNeighboringCities(String cityName) {
 		City city = cities.get(cityName);
-		String[] neighbors = new String[0];
-		neighbors = city.roads.keySet().toArray(neighbors);
+		String[] neighbors = new String[city.roads.size()];
+		for(int i = 0; i < city.roads.size(); i++) neighbors[i] = city.roads.get(i).dest;
 		return neighbors;
+	}
+	
+	public String[] findPath(String City1Name, String City2Name) {
+		HashMap<String,Double> closedList = new HashMap<>();
+		//Make a priority queue of roads
 	}
 	
 	private double findHeuristic(City city1, City city2) {
@@ -107,13 +126,27 @@ public class AStarGraph {
 		private String name;
 		private double lat;
 		private double lon;
-		private HashMap<String, Double> roads;
+		private ArrayList<Road> roads;
 		
 		public City(String name, double lat, double lon) {
 			this.name = name;
 			this.lat = lat;
 			this.lon = lon;
-			this.roads = new HashMap<>();
+			this.roads = new ArrayList<>();
+		}
+	}
+	
+	private class Road{
+		private String dest;
+		private double length;
+		
+		public Road(String destCity, double length) {
+			this.dest = destCity;
+			this.length = length;
+		}
+		
+		public int compareTo(Road other) {
+			return Integer.compare((int)(other.length*100), (int) (this.length*100));
 		}
 	}
 }
