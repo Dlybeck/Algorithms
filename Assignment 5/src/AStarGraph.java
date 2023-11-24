@@ -3,7 +3,45 @@ import java.util.*;
 public class AStarGraph {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		AStarGraph graph = new AStarGraph();
+		
+		
+		System.out.println("Adding Salem");
+		graph.addCity("Salem", 44.9308333333, -123.0288888889);
+		
+		System.out.println("Adding Sacremento");
+		graph.addCity("Sacremento", 38.5555555556, -121.4688888889);
+		
+		System.out.println("Adding Boston");
+		graph.addCity("Boston", 42.3580555556, -71.0636111111);
+		
+		System.out.println("Adding Nashville");
+		graph.addCity("Nashville", 36.1666666667, -86.7833333333);
+		
+		
+		System.out.println("Adding Road from Salem to Nashville");
+		graph.addRoad("Salem", "Nashville", 4100);
+		
+		System.out.println("Adding Road from Salem to Sacremento");
+		graph.addRoad("Salem", "Sacremento", 900);
+		
+		System.out.println("Adding Road from Nashville to Sacremento");
+		graph.addRoad("Nashville", "Sacremento", 3900);
+		
+		System.out.println("Adding Road from Nashville to Boston");
+		graph.addRoad("Nashville", "Boston", 2000);
+		
+		//System.out.println("Adding Road from Salem to Boston");
+		//graph.addRoad("Salem", "Boston", 5200);
+		
+		
+		//System.out.println("Removing Road from Salem to Boston");
+		//graph.deleteRoad("Salem", "Boston");
+		
+		System.out.println("Top of priority Queue:");
+		graph.findPath("Salem", "Boston");
+		
+		
 
 	}
 	
@@ -24,8 +62,7 @@ public class AStarGraph {
 		City city2 = cities.get(city2Name);
 		
 		if(length < findHeuristic(city1, city2)) throw new IllegalArgumentException("Road is too short");
-		
-		if(!isValidRoad(city1, city2Name) || !isValidRoad(city2, city1Name)) throw new IllegalArgumentException("Cities already connected");
+		if(isExistingRoad(city1, city2Name) || isExistingRoad(city2, city1Name)) throw new IllegalArgumentException("Cities already connected");
 		
 		
 		Road road1 = new Road(city2Name, length);
@@ -40,7 +77,7 @@ public class AStarGraph {
 		City city2 = cities.get(city2Name);
 		
 		//if both cities say the road exists remove them
-		if(isValidRoad(city1, city2Name) && isValidRoad(city2, city1Name)) {
+		if(!isExistingRoad(city1, city2Name) && !isExistingRoad(city2, city1Name)) {
 			for(int i = 0; i < city1.roads.size(); i++) {
 				if(city1.roads.get(i).dest.compareTo(city2Name) == 0) city1.roads.remove(i);
 				return true;
@@ -56,7 +93,7 @@ public class AStarGraph {
 	public boolean isValidCity(String city) {
 		return cities.containsKey(city);	
 	}
-	private boolean isValidRoad(City city, String city2) {
+	private boolean isExistingRoad(City city, String city2) {
 		for(Road road : city.roads) {
 			if(road.dest.compareTo(city2) == 0) return true;
 		}
@@ -77,7 +114,7 @@ public class AStarGraph {
 	
 	public double getRoadLength(String city1Name, String city2Name) {
 		City city = cities.get(city1Name);
-		if(city != null && isValidRoad(city, city2Name)) {
+		if(city != null && isExistingRoad(city, city2Name)) {
 			for(Road road : city.roads) {
 				//this is the road
 				if (road.dest.compareTo(city2Name) == 0) return road.length;
@@ -94,10 +131,65 @@ public class AStarGraph {
 		return neighbors;
 	}
 	
-	public String[] findPath(String City1Name, String City2Name) {
-		HashMap<String,Double> closedList = new HashMap<>();
-		//Make a priority queue of roads
+	public String[] findPath(String city1Name, String city2Name) {
+		//Create Lists
+		HashSet<String> closedList = new HashSet<String>();
+		PriorityQueue<City> openList = new PriorityQueue<City>();
+		
+		//Set Up Cities
+		City startCity = cities.get(city1Name);
+		City endCity = cities.get(city2Name);
+		City currentCity;
+		City tempCity;
+		startCity.pathScore = 0;
+		startCity.score = findHeuristic(startCity, endCity) + 0;
+		openList.add(startCity);
+		
+		double pathScore = 0;
+		double heuristic = 0;
+		while(!openList.isEmpty()) {
+			currentCity = openList.poll();
+			System.out.println("Best city is " + currentCity.name + ". With score " + currentCity.score);
+			
+			//if this city has already been checked move to the next in queue
+			if(closedList.contains(currentCity.name)) continue;
+			//if this is the city
+			if(currentCity.name.compareTo(endCity.name) == 0) {
+				closedList.add(currentCity.name);
+				break;
+			}
+			//add to openList
+			for(Road road : currentCity.roads) {
+				tempCity = cities.get(road.dest); //get the destination from the given road
+				pathScore = road.length + currentCity.pathScore; //add pathScore for new city
+				heuristic = findHeuristic(tempCity, endCity); //add current heuristic
+				if(tempCity.score == 0 || tempCity.score > (pathScore+heuristic)) {
+					tempCity.pathScore = pathScore; //Set updated pathScore
+					tempCity.score = pathScore+heuristic; //set updated score
+					System.out.println("	Potential city is " + tempCity.name + ". With score " + tempCity.score);
+					//System.out.println("	pathScore is "+ pathScore);
+					//System.out.println("	heuristic is "+ heuristic + "\n");
+					System.out.println();
+					openList.add(tempCity);
+				}
+			}
+			
+			closedList.add(currentCity.name);
+		}
+		
+		//create path array
+		//interate through path and always choose "worse" path when given a choice
+		
+		
+		
+		
+		return null;
 	}
+	
+	
+	
+	
+	
 	
 	private double findHeuristic(City city1, City city2) {
 		//Math.PI/180 to convert to radians for sin calculations
@@ -122,17 +214,29 @@ public class AStarGraph {
 	
 	
 	
-	private class City{
+	private class City implements Comparable<City>{
 		private String name;
 		private double lat;
 		private double lon;
 		private ArrayList<Road> roads;
+		private double pathScore;
+		private double score;
 		
 		public City(String name, double lat, double lon) {
 			this.name = name;
 			this.lat = lat;
 			this.lon = lon;
 			this.roads = new ArrayList<>();
+			this.pathScore = 0;
+			this.score = 0;
+		}
+		
+		
+		@SuppressWarnings("unused")
+		@Override
+		public int compareTo(City other) {
+			//-1 to prioritize lowest
+			return -1*Integer.compare((int)(other.score*100), (int)(this.score*100));
 		}
 	}
 	
