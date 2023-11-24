@@ -76,6 +76,7 @@ public class AStarGraph {
 	}
 	
 	public boolean deleteRoad(String city1Name, String city2Name) {
+		if(!isValidCity(city1Name) || !isValidCity(city2Name)) throw new IllegalArgumentException("A city does not exist");
 		City city1 = cities.get(city1Name);
 		City city2 = cities.get(city2Name);
 		
@@ -133,6 +134,7 @@ public class AStarGraph {
 	}
 	
 	public String[] findPath(String city1Name, String city2Name) {
+		if(!isValidCity(city1Name) || !isValidCity(city2Name)) throw new IllegalArgumentException("A city does not exist");
 		//Create Lists
 		HashMap<String, String> closedList = new HashMap<String, String>();
 		PriorityQueue<City> openList = new PriorityQueue<City>();
@@ -153,8 +155,6 @@ public class AStarGraph {
 			
 			//System.out.println("Best City is " + currentCity.name + ". With score " + currentCity.score);
 			
-			//if city has already been checked move on to next in openList
-			if(closedList.containsKey(currentCity)) continue;
 			
 			if(parentCity == null) {
 				//System.out.print("Adding " + currentCity.name + " with parent null\n");
@@ -164,6 +164,10 @@ public class AStarGraph {
 			parentCity = currentCity;
 			for(Road road : currentCity.roads) {
 				currentCity = cities.get(road.dest);
+				
+				//skip to next in queue if already looked at
+				if(closedList.containsKey(currentCity.name)) continue;
+				
 				pathScore = road.length + parentCity.pathScore;
 				heuristic = findHeuristic(currentCity, endCity);
 				if(currentCity.score == 0|| currentCity.score > pathScore+heuristic) {
@@ -197,6 +201,8 @@ public class AStarGraph {
 			}
 		}
 		
+		if(path.size() <= 1) return null;
+		
 		String[] pathArray = new String[0];
 		return path.toArray(pathArray);
 	}
@@ -211,6 +217,7 @@ public class AStarGraph {
 					pathLength += road.length;
 					break;
 				}
+				throw new IllegalArgumentException("A road does not connect " + city.name + " and " + nextCity.name);
 			}
 		}
 		return pathLength;
