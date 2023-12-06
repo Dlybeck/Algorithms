@@ -15,7 +15,7 @@ import java.io.*;
 import java.util.*;
 import java.text.DecimalFormat;
 
-public class CityNavigator {
+public class Navigator {
 	private static DecimalFormat locFormat = new DecimalFormat("0.##");
 	public static void main(String[] args) {
 		// make sure we have a file
@@ -26,7 +26,7 @@ public class CityNavigator {
 
 		// make the graph, and query on it
 		try {
-			AStarGraph graph = makeAStarGraph(args[0]);
+			Graph graph = makeAStarGraph(args[0]);
 			System.out.println("File \"" +args[0]+ "\" has been loaded with " +graph.size()+ " cities.");
 			queryUser(graph);
 		}
@@ -37,8 +37,8 @@ public class CityNavigator {
 	}
 
 	// load a file & make an AStarGraph from its lines
-	private static AStarGraph makeAStarGraph(String filename) throws IOException {
-		AStarGraph graph = new AStarGraph();
+	private static Graph makeAStarGraph(String filename) throws IOException {
+		Graph graph = new Graph();
 		
 		// read the file
 		Scanner scanner = new Scanner(new File(filename));
@@ -66,7 +66,7 @@ public class CityNavigator {
 	}
 
 	// enter a loop to query the user for searches & commands
-	private static void queryUser(AStarGraph graph) {
+	private static void queryUser(Graph graph) {
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.println("Please enter your query:\n");

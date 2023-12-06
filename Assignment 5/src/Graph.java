@@ -7,7 +7,7 @@ import java.util.*;
  * @author David Lybeck
  * @version 2023.11.24
  */
-public class AStarGraph {	
+public class Graph {	
 	/**
 	 * empty map of all cities added
 	 */
@@ -16,7 +16,7 @@ public class AStarGraph {
 	/**
 	 * Constructor for the AStarGraph
 	 */
-	public AStarGraph() {
+	public Graph() {
 		this.cities = new HashMap<String, City>();
 	}
 	
@@ -319,7 +319,7 @@ public class AStarGraph {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		AStarGraph graph = new AStarGraph();
+		Graph graph = new Graph();
 		
 		
 		System.out.println("Adding Salem");
