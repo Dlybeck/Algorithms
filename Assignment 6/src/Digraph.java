@@ -129,4 +129,64 @@ public class Digraph {
 	public String toString() {
 		return vertices.toString();
 	}
+	
+	
+	
+	private class TopologicalSorter{
+		
+		public boolean isDirectedCycle(Digraph digraph) {
+			// allocation
+			boolean[] marked = new boolean[digraph.countVertices()];
+			boolean[] onStack = new boolean[digraph.countVertices()];
+			// look for cycles, 1 component at a time
+			for (int v : digraph.getVertices()) {
+				if (marked[v]) continue;
+				if (doCycleFindingDFT(digraph, v, marked, onStack)) return true;
+			}
+			// if no cycles, return false
+			return false;
+		}
+		
+		private boolean doCycleFindingDFT(Digraph digraph, int vertex, boolean[] marked, boolean[] onStack) {
+			  // mark the element off & add it to the stack
+			  marked[vertex] = true;
+			  onStack[vertex] = true;
+			  // see if any neighbors are on the stack, explore
+			  for (int v : digraph.getAdjacencyList(vertex)) {
+				  if (onStack[v]) return true;
+				  if (!marked[v]) {
+					  if (doCycleFindingDFT(digraph, v, marked, onStack)) return true;
+				  }
+			  }
+			  // if we get here, we only found dead ends
+			  onStack[vertex] = false;
+			  return false;
+		}
+		
+		public int[] sortTopologically(Digraph digraph) {
+			// allocation
+			boolean[] marked = new boolean[digraph.countVertices()];
+			int[] list = new int[digraph.countVertices()];
+			int[] index = new int[1];
+			index[0] = list.length-1;
+			// traverse
+			for (int v : digraph.getVertices()) {
+				if (marked[v]) continue;
+				doTopoSortDFT(digraph, v, marked, list, index);
+			}
+			// return the list
+			return list;
+		}
+	}
+	
 }
+
+
+
+
+
+
+
+
+
+
