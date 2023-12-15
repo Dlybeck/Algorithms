@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Digraph {
@@ -39,6 +40,7 @@ public class Digraph {
 	}
 	
 	public void addVertex(String name) {
+		System.out.println("Adding: " + name);
 		if(!isValidVertex(name)) {
 			ArrayList<String> emptyList = new ArrayList<String>(0);
 			vertices.put(name, emptyList);
@@ -56,12 +58,13 @@ public class Digraph {
 			vertices.get(vertex1).add(vertex2);
 		}
 		else {
-			throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
+			//throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
 		}
 	}
 	
 	public boolean deleteEdge(String vertex1, String vertex2) {
 		//if both vertices are where they should be
+		System.out.println("Deleting edge between " +vertex1 + " and " + vertex2);
 		if(isValidVertex(vertex1) && isValidVertex(vertex2)) {
 			//edge exists
 			if(vertices.get(vertex1).contains(vertex2)) {
@@ -85,11 +88,13 @@ public class Digraph {
 	}
 	
 	public String[] getAdjacencyList(String vertex) {
-		return (String[]) vertices.get(vertex).toArray();
+		Object[] objects = vertices.get(vertex).toArray();
+		return Arrays.copyOf(objects, objects.length, String[].class);
 	}
 	
 	public String[] getVertices() {
-		return (String[]) vertices.keySet().toArray();
+		Object[] objects = vertices.keySet().toArray();
+		return Arrays.copyOf(objects, objects.length, String[].class);
 	}
 	
 	public Digraph makeReverseGraph() {
@@ -99,7 +104,6 @@ public class Digraph {
 				//if it is a new vertex add it to the graph
 				if(!reverse.isValidVertex(vertex2)) {
 					reverse.addVertex(vertex2);
-					System.out.println(reverse.toString());
 				}
 			}
 		});
@@ -108,7 +112,6 @@ public class Digraph {
 				//if it is a new vertex add it to the graph
 				if(!reverse.isValidVertex(vertex2)) {
 					reverse.addVertex(vertex2);
-					System.out.println(reverse.toString());
 				}
 			}
 		});

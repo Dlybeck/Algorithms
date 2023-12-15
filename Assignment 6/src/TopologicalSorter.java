@@ -76,6 +76,11 @@ public class TopologicalSorter {
     		}
     	}
     	
-    	return (String[][])strongs.toArray();
+    	String[][] array = new String[strongs.size()][];
+    	
+    	for (int i = 0; i < strongs.size(); i++) {
+    	    array[i] = strongs.get(i);
+    	}
+    	return array;
     }
 }
