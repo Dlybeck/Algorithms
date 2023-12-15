@@ -1,9 +1,11 @@
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class TopologicalSorter {
 	public static boolean isDirectedCycle(Digraph digraph) {
+    	System.out.println("\nChecking if Directed Cycle\n");
+
         // allocation
         HashSet<String> marked = new HashSet<>();
         HashSet<String> onStack = new HashSet<>();
@@ -33,6 +35,8 @@ public class TopologicalSorter {
     }
 
     public static String[] sortTopologically(Digraph digraph) {
+    	System.out.println("\nSorting Topologically\n");
+
         // allocation
     	HashSet<String> marked = new HashSet<>();
         int[] index = {digraph.size() - 1};
@@ -40,47 +44,87 @@ public class TopologicalSorter {
         // traverse
         for (String v : digraph.getVertices()) {
             if (marked.contains(v)) continue;
-            doTopoSortDFT(digraph, v, marked, list, index);
+            else{
+            	doTopoSortDFT(digraph, v, marked, list, index);
+            }
         }
         // return the list
         return list;
     }
 
     private static void doTopoSortDFT(Digraph digraph, String vertex, HashSet<String> marked, String[] list, int[] index) {
+    	System.out.println("\nDoing doTopoSortDFT\n");
         // mark the element off
         marked.add(vertex);
         // explore neighbors
-        for (String v : digraph.getAdjacencyList(vertex)) {
-            if (!marked.contains(v)) {
-                doTopoSortDFT(digraph, v, marked, list, index);
+        for (String connected : digraph.getAdjacencyList(vertex)) {
+            if (!marked.contains(connected)) {
+                doTopoSortDFT(digraph, connected, marked, list, index);
             }
         }
         // add the vertex to the list
-        list[index[0]--] = vertex;
+        list[index[0]] = vertex;
+        index[0]--;
     }
 	    
     public static String[][] findStrongComponents(Digraph digraph){
-    	Digraph reverse = digraph.makeReverseGraph();
-    	String[] reverseList = sortTopologically(reverse);
-    	String[] adjList = null;
-    	ArrayList<String[]> strongs = new ArrayList<String[]>();
-    	HashSet<String> added = new HashSet<String>(); 
+    	System.out.println("\nFinding Strong Components\n");
+
     	
-    	for(String vertex : reverseList) {
-    		if(!added.contains(vertex)) {
-    			added.add(vertex); //add this vertex to added list
-	    		adjList = digraph.getAdjacencyList(vertex); //get adjacency list of currently looked at vertex
-	    		for(String v : adjList) //add every connected vertex to added list
-	    			added.add(v);
-	    		strongs.add(adjList);
+    	Digraph reverse = digraph.makeReverseGraph();
+    	String[] reversePostfix = sortTopologically(reverse);
+    	//REVERSE POSTFIX CONTAINS ELEMENTS (debug comment)
+    	ArrayList<String[]> strongs = new ArrayList<String[]>();
+    	HashSet<String> closedList = new HashSet<String>(); 
+    	
+    	for(String vertex : reversePostfix) {
+    		//if vertex has not been found
+    		if(!closedList.contains(vertex)) {
+    			String[] component = doDFT(digraph, vertex, closedList);
+    			System.out.println(Arrays.toString(component));
+	    		strongs.add(component);
     		}
     	}
-    	
     	String[][] array = new String[strongs.size()][];
     	
     	for (int i = 0; i < strongs.size(); i++) {
-    	    array[i] = strongs.get(i);
+    	    array[strongs.size() - (1+i)] = strongs.get(i);
     	}
+    	
+    	System.out.println("array:");
+    	for(String[] Vs : strongs) {
+    		System.out.println(Arrays.toString(Vs));
+    	}
+    	
     	return array;
+    }
+    
+    private static String[] doDFT(Digraph digraph, String vertex, HashSet<String> closedList) {
+    	System.out.println("\nDoing doDFT\n");
+    	ArrayList <String> group = new ArrayList<String>();
+    	group = doDFT(digraph, vertex, closedList, group);
+    	
+    	Object[] objects = group.toArray();
+    	String[] strongComponent = Arrays.copyOf(objects, objects.length, String[].class);
+    	for(String v : strongComponent) {
+    		System.out.print(v + "       ");
+    	}
+    	System.out.println("");
+		return strongComponent;
+    }
+    
+    private static ArrayList<String> doDFT(Digraph digraph, String vertex, HashSet<String> closedList, ArrayList<String> group) {
+    	closedList.add(vertex);
+        //add to strong component
+        System.out.println("Adding " + vertex);
+    	group.add(vertex);
+    	
+    	for(String connected : digraph.getAdjacencyList(vertex)) {
+    		if (!closedList.contains(connected)) {
+                doDFT(digraph, connected, closedList, group);
+            }
+    	}
+    	
+    	return group;
     }
 }
