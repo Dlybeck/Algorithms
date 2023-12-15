@@ -51,14 +51,14 @@ public class Digraph {
 	}
 	
 	public void addEdge(String vertex1, String vertex2) {
-		System.out.println("Adding " + vertex1 + " to " + vertex2);
+		System.out.println("Connecting " + vertex1 + " to " + vertex2);
 		//add vertex2 as a pointer in vertex1
 		if(isValidVertex(vertex1) && isValidVertex(vertex2)) {
 			System.out.println(vertices.get(vertex1).toString());
 			vertices.get(vertex1).add(vertex2);
 		}
 		else {
-			//throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
+			throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
 		}
 	}
 	
