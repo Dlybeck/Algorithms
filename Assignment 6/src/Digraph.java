@@ -27,6 +27,9 @@ public class Digraph {
 
 		System.out.println(graph.toString());
 		
+		Digraph reverse = graph.makeReverseGraph();
+		System.out.println(reverse.toString());
+		
 		System.out.println(graph.isValidVertex("C"));
 		
 		System.out.println("");
@@ -54,7 +57,6 @@ public class Digraph {
 		System.out.println("Connecting " + vertex1 + " to " + vertex2);
 		//add vertex2 as a pointer in vertex1
 		if(isValidVertex(vertex1) && isValidVertex(vertex2)) {
-			System.out.println(vertices.get(vertex1).toString());
 			vertices.get(vertex1).add(vertex2);
 		}
 		else {
@@ -98,38 +100,36 @@ public class Digraph {
 	}
 	
 	public Digraph makeReverseGraph() {
-		Digraph reverse = new Digraph();
-		vertices.forEach((vertex1, edges) -> {
-			for(String vertex2 : edges) {
-				//if it is a new vertex add it to the graph
-				if(!reverse.isValidVertex(vertex2)) {
-					reverse.addVertex(vertex2);
-				}
-			}
-		});
-		vertices.forEach((vertex1, edges) -> {
-			for(String vertex2 : edges) {
-				//if it is a new vertex add it to the graph
-				if(!reverse.isValidVertex(vertex2)) {
-					reverse.addVertex(vertex2);
-				}
-			}
-		});
-		vertices.forEach((vertex1, edges) -> {
-			for(String vertex2 : edges) {
-				reverse.addEdge(vertex2, vertex1);
-			}
-		});
+	    Digraph reverse = new Digraph();
 
-		
-		return reverse;
+	    // Add vertices and edges to the reverse graph
+	    for (String vertex : vertices.keySet()) {
+	        if (!reverse.isValidVertex(vertex)) {
+	            reverse.addVertex(vertex); // Add existing vertices to the reverse graph
+	        }
+
+	        ArrayList<String> edges = vertices.get(vertex);
+	        for (String edge : edges) {
+	            // If it's a new vertex, add it to the reverse graph
+	            if (!reverse.isValidVertex(edge)) {
+	                reverse.addVertex(edge);
+	            }
+
+	            // Add the edge in reverse (vertex2 to vertex1)
+	            if (!edge.equals(vertex)) {
+	                reverse.addEdge(edge, vertex);
+	            }
+	        }
+	    }
+	    return reverse;
 	}
+
+
 	
 	@Override
 	public String toString() {
 		return vertices.toString();
 	}
-	
 }
 
 

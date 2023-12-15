@@ -5,53 +5,53 @@ import java.util.HashSet;
 public class TopologicalSorter {
 	public static boolean isDirectedCycle(Digraph digraph) {
         // allocation
-        HashMap<String, Boolean> marked = new HashMap<>();
-        HashMap<String, Boolean> onStack = new HashMap<>();
+        HashSet<String> marked = new HashSet<>();
+        HashSet<String> onStack = new HashSet<>();
         // look for cycles, 1 component at a time
         for (String v : digraph.getVertices()) {
-            if (marked.containsKey(v)) continue;
+            if (marked.contains(v)) continue;
             if (doCycleFindingDFT(digraph, v, marked, onStack)) return true;
         }
         // if no cycles, return false
         return false;
     }
 
-    private static boolean doCycleFindingDFT(Digraph digraph, String vertex, HashMap<String, Boolean> marked, HashMap<String, Boolean> onStack) {
+    private static boolean doCycleFindingDFT(Digraph digraph, String vertex, HashSet<String> marked, HashSet<String> onStack) {
         // mark the element off & add it to the stack
-        marked.put(vertex, true);
-        onStack.put(vertex, true);
+        marked.add(vertex);
+        onStack.add(vertex);
         // see if any neighbors are on the stack, explore
         for (String v : digraph.getAdjacencyList(vertex)) {
-            if (onStack.getOrDefault(v, false)) return true;
-            if (!marked.getOrDefault(v, false)) {
+            if (onStack.contains(v)) return true;
+            if (!marked.contains(v)) {
                 if (doCycleFindingDFT(digraph, v, marked, onStack)) return true;
             }
         }
         // if we get here, we only found dead ends
-        onStack.put(vertex, false);
+        onStack.add(vertex);
         return false;
     }
 
     public static String[] sortTopologically(Digraph digraph) {
         // allocation
-    	HashMap<String, Boolean> marked = new HashMap<>();
+    	HashSet<String> marked = new HashSet<>();
         int[] index = {digraph.size() - 1};
         String[] list = new String[digraph.size()];
         // traverse
         for (String v : digraph.getVertices()) {
-            if (marked.containsKey(v)) continue;
+            if (marked.contains(v)) continue;
             doTopoSortDFT(digraph, v, marked, list, index);
         }
         // return the list
         return list;
     }
 
-    private static void doTopoSortDFT(Digraph digraph, String vertex, HashMap<String, Boolean> marked, String[] list, int[] index) {
+    private static void doTopoSortDFT(Digraph digraph, String vertex, HashSet<String> marked, String[] list, int[] index) {
         // mark the element off
-        marked.put(vertex, true);
+        marked.add(vertex);
         // explore neighbors
         for (String v : digraph.getAdjacencyList(vertex)) {
-            if (!marked.getOrDefault(v, false)) {
+            if (!marked.contains(v)) {
                 doTopoSortDFT(digraph, v, marked, list, index);
             }
         }
