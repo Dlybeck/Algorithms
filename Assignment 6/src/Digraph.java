@@ -2,8 +2,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Digraph {
 
+/**
+ * Digraph Object that Uses Strings for vertices
+ * 
+ * @author David Lybeck
+ * @version 21.12.15
+ */
+public class Digraph {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Digraph graph = new Digraph();
@@ -38,35 +44,47 @@ public class Digraph {
 
 	private HashMap<String, ArrayList<String>> vertices;
 
+	/**
+	 * Digraph Constuctor
+	 */
 	public Digraph() {
 		this.vertices = new HashMap<String, ArrayList<String>>();
 	}
 	
+	/**
+	 * Adds vertex to the graph
+	 * @param name String
+	 */
 	public void addVertex(String name) {
-		System.out.println("Adding: " + name);
 		if(!isValidVertex(name)) {
 			ArrayList<String> emptyList = new ArrayList<String>(0);
 			vertices.put(name, emptyList);
 		}
-		else {
+		else
 			throw new IllegalArgumentException("This element has already been added");
-		}
 	}
 	
+	/**
+	 * Takes 2 vertices as input and connects them
+	 * @param vertex1 String
+	 * @param vertex2 String
+	 */
 	public void addEdge(String vertex1, String vertex2) {
-		System.out.println("Connecting " + vertex1 + " to " + vertex2);
 		//add vertex2 as a pointer in vertex1
-		if(isValidVertex(vertex1) && isValidVertex(vertex2)) {
+		if(isValidVertex(vertex1) && isValidVertex(vertex2))
 			vertices.get(vertex1).add(vertex2);
-		}
-		else {
+		else
 			throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
-		}
 	}
 	
+	/**
+	 * Takes two vertices in the graph and removes the edge connecting them
+	 * @param vertex1 String
+	 * @param vertex2 String
+	 * @return boolean True if the edge was deleted false if it does not exist
+	 */
 	public boolean deleteEdge(String vertex1, String vertex2) {
 		//if both vertices are where they should be
-		System.out.println("Deleting edge between " +vertex1 + " and " + vertex2);
 		if(isValidVertex(vertex1) && isValidVertex(vertex2)) {
 			//edge exists
 			if(vertices.get(vertex1).contains(vertex2)) {
@@ -80,64 +98,75 @@ public class Digraph {
 		else throw new IllegalArgumentException("Vertex1 or vertex2 does not exist");
 	}
 	
+	/**
+	 * Finds the number of vertices in the graph
+	 * @return int size
+	 */
 	public int size() {
 		return vertices.size();
 	}
 	
+	/**
+	 * Checks if the given vertex is in the graph
+	 * @param vertex String
+	 * @return boolean true if the vertex is in the graph
+	 */
 	public boolean isValidVertex(String vertex) {
-		if(vertices.containsKey(vertex)) return true;
+		if(vertices.containsKey(vertex))
+			return true;
 		else return false;
 	}
 	
+	/**
+	 * Makes an adjacency list for a given vertex
+	 * @param vertex String
+	 * @return String[]
+	 */
 	public String[] getAdjacencyList(String vertex) {
 		Object[] objects = vertices.get(vertex).toArray();
 		return Arrays.copyOf(objects, objects.length, String[].class);
 	}
 	
+	/**
+	 * Makes an array of all the vertices in the graph
+	 * @return String []
+	 */
 	public String[] getVertices() {
 		Object[] objects = vertices.keySet().toArray();
 		return Arrays.copyOf(objects, objects.length, String[].class);
 	}
 	
+	/**
+	 * creates a digraph that is the reverse of the one being used
+	 * @return Digraph
+	 */
 	public Digraph makeReverseGraph() {
 	    Digraph reverse = new Digraph();
 
 	    // Add vertices and edges to the reverse graph
 	    for (String vertex : vertices.keySet()) {
-	        if (!reverse.isValidVertex(vertex)) {
+	        if (!reverse.isValidVertex(vertex))
 	            reverse.addVertex(vertex); // Add existing vertices to the reverse graph
-	        }
 
 	        ArrayList<String> edges = vertices.get(vertex);
 	        for (String edge : edges) {
 	            // If it's a new vertex, add it to the reverse graph
-	            if (!reverse.isValidVertex(edge)) {
+	            if (!reverse.isValidVertex(edge))
 	                reverse.addVertex(edge);
-	            }
 
 	            // Add the edge in reverse (vertex2 to vertex1)
-	            if (!edge.equals(vertex)) {
+	            if (!edge.equals(vertex))
 	                reverse.addEdge(edge, vertex);
-	            }
 	        }
 	    }
 	    return reverse;
 	}
 
-
-	
+	/**
+	 * toString method for the Digraph
+	 */
 	@Override
 	public String toString() {
 		return vertices.toString();
 	}
 }
-
-
-
-
-
-
-
-
-
-
